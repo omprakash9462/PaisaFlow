@@ -1,0 +1,261 @@
+
+/* =========================================
+   PAISAFLOW — COMMON AESTHETIC BACKGROUND
+   Apply this theme across all pages.
+========================================= */
+
+:root {
+    --pf-cream: #f7f6ef;
+    --pf-emerald: #176b4b;
+    --pf-green: #21865b;
+    --pf-mint: #d8eee0;
+    --pf-text: #1e293b;
+    --pf-border: rgba(23, 107, 75, 0.12);
+}
+
+/* Main page background */
+
+html {
+    min-height: 100%;
+    background: var(--pf-cream);
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+
+    background:
+        radial-gradient(
+            ellipse at 8% 8%,
+            rgba(112, 190, 151, 0.24),
+            transparent 32%
+        ),
+        radial-gradient(
+            ellipse at 92% 15%,
+            rgba(23, 107, 75, 0.12),
+            transparent 30%
+        ),
+        radial-gradient(
+            ellipse at 48% 100%,
+            rgba(205, 232, 215, 0.58),
+            transparent 42%
+        ),
+        var(--pf-cream);
+
+    background-attachment: fixed;
+
+    color: var(--pf-text);
+
+    position: relative;
+    isolation: isolate;
+}
+
+/* Ambient glow layer */
+
+body::before {
+    content: "";
+
+    position: fixed;
+    top: -150px;
+    left: -150px;
+
+    width: 420px;
+    height: 420px;
+
+    border-radius: 50%;
+
+    background: radial-gradient(
+        circle,
+        rgba(33, 134, 91, 0.15),
+        rgba(112, 190, 151, 0.06) 48%,
+        transparent 72%
+    );
+
+    filter: blur(18px);
+
+    pointer-events: none;
+    z-index: -1;
+
+    animation: pfAmbientGlow 14s ease-in-out infinite alternate;
+}
+
+/* Second ambient glow */
+
+body::after {
+    content: "";
+
+    position: fixed;
+    right: -180px;
+    bottom: -170px;
+
+    width: 480px;
+    height: 480px;
+
+    border-radius: 50%;
+
+    background: radial-gradient(
+        circle,
+        rgba(23, 107, 75, 0.13),
+        rgba(112, 190, 151, 0.05) 48%,
+        transparent 72%
+    );
+
+    filter: blur(22px);
+
+    pointer-events: none;
+    z-index: -1;
+
+    animation: pfAmbientGlow 18s ease-in-out infinite alternate-reverse;
+}
+
+/* Subtle animation */
+
+@keyframes pfAmbientGlow {
+    0% {
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+
+    50% {
+        transform: translate3d(24px, 22px, 0) scale(1.06);
+    }
+
+    100% {
+        transform: translate3d(-12px, 32px, 0) scale(0.96);
+    }
+}
+
+/* Respect reduced-motion settings */
+
+@media (prefers-reduced-motion: reduce) {
+    body::before,
+    body::after {
+        animation: none;
+    }
+}
+```css
+/* ===== PAISAFLOW GLOBAL BACKGROUND FIX ===== */
+
+html,
+body {
+    min-height: 100%;
+    background-color: #f7f6ef !important;
+}
+
+body {
+    background-image:
+        radial-gradient(
+            ellipse at 10% 10%,
+            rgba(112, 190, 151, 0.30),
+            transparent 35%
+        ),
+        radial-gradient(
+            ellipse at 90% 20%,
+            rgba(23, 107, 75, 0.18),
+            transparent 32%
+        ),
+        radial-gradient(
+            ellipse at 50% 100%,
+            rgba(205, 232, 215, 0.65),
+            transparent 45%
+        ) !important;
+
+    background-attachment: fixed !important;
+    background-repeat: no-repeat !important;
+    background-size: cover !important;
+    position: relative;
+    isolation: isolate;
+}
+
+/* Soft animated glow */
+
+body::before {
+    content: "";
+    position: fixed;
+
+    width: 400px;
+    height: 400px;
+
+    top: -120px;
+    left: -120px;
+
+    background: radial-gradient(
+        circle,
+        rgba(33, 134, 91, 0.18),
+        transparent 70%
+    );
+
+    filter: blur(25px);
+    border-radius: 50%;
+
+    pointer-events: none;
+    z-index: -1;
+
+    animation: paisaGlow 12s ease-in-out infinite alternate;
+}
+
+body::after {
+    content: "";
+    position: fixed;
+
+    width: 450px;
+    height: 450px;
+
+    right: -150px;
+    bottom: -150px;
+
+    background: radial-gradient(
+        circle,
+        rgba(112, 190, 151, 0.20),
+        transparent 70%
+    );
+
+    filter: blur(30px);
+    border-radius: 50%;
+
+    pointer-events: none;
+    z-index: -1;
+
+    animation: paisaGlow 16s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes paisaGlow {
+    from {
+        transform: translate(0, 0) scale(1);
+    }
+
+    to {
+        transform: translate(35px, 25px) scale(1.1);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body::before,
+    body::after {
+        animation: none;
+    }
+}
+/* ===== PAISAFLOW BACKGROUND VISIBILITY TEST ===== */
+
+html,
+body {
+    background-color: #f7f6ef !important;
+}
+
+body {
+    background-image:
+        radial-gradient(
+            circle at top left,
+            rgba(0, 180, 100, 0.55),
+            transparent 45%
+        ),
+        radial-gradient(
+            circle at bottom right,
+            rgba(0, 100, 70, 0.40),
+            transparent 45%
+        ) !important;
+
+    background-attachment: fixed !important;
+    background-repeat: no-repeat !important;
+    background-size: cover !important;
+}
+

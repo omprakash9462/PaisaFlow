@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>PaisaFlow | Analytics</title>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+
+        :root {
+            --primary: #16a36a;
+            --primary-dark: #087f50;
+            --background: #f5f8f6;
+            --panel: #ffffff;
+            --text: #1c2b24;
+            --muted: #7b8981;
+            --border: #e7eee9;
+            --sidebar: #10251c;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: var(--background);
+            color: var(--text);
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            width: 245px;
+            background: var(--sidebar);
+            color: white;
+            padding: 28px 18px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: bold;
+            color: #4ade9a;
+            margin-bottom: 8px;
+        }
+
+        .logo-subtitle {
+            font-size: 12px;
+            color: #a5b8ad;
+            margin-bottom: 35px;
+        }
+
+        .nav-heading {
+            font-size: 10px;
+            color: #91a69a;
+            margin: 25px 12px 12px;
+            letter-spacing: 1.5px;
+        }
+
+        .nav-link {
+            display: block;
+            text-decoration: none;
+            color: #c8d5cd;
+            padding: 13px 14px;
+            border-radius: 9px;
+            margin-bottom: 7px;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: #1c4533;
+            color: #4ade9a;
+        }
+
+        /* MAIN CONTENT */
+
+        .main {
+            margin-left: 245px;
+            width: calc(100% - 245px);
+            padding: 30px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 15px;
+        }
+
+        .topbar h1 {
+            font-size: 27px;
+        }
+
+        .topbar p {
+            color: var(--muted);
+            font-size: 13px;
+            margin-top: 7px;
+        }
+
+        .user-badge {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 11px 18px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        /* SUMMARY CARDS */
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .summary-card {
+            background: var(--panel);
+            padding: 23px;
+            border-radius: 15px;
+            border: 1px solid var(--border);
+            box-shadow: 0 3px 12px rgba(0,0,0,0.025);
+        }
+
+        .card-label {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 13px;
+        }
+
+        .card-value {
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        .card-icon {
+            font-size: 23px;
+            margin-bottom: 15px;
+        }
+
+        .green {
+            color: #12965f;
+        }
+
+        .red {
+            color: #e05a5a;
+        }
+
+        .blue {
+            color: #3986dc;
+        }
+
+        .purple {
+            color: #8b65d8;
+        }
+
+        /* CHART GRID */
+
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .chart-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 23px;
+            min-width: 0;
+        }
+
+        .chart-card h3 {
+            font-size: 17px;
+            margin-bottom: 7px;
+        }
+
+        .chart-description {
+            color: var(--muted);
+            font-size: 12px;
+            margin-bottom: 22px;
+        }
+
+        .chart-container {
+            height: 280px;
+            position: relative;
+        }
+
+        /* INSIGHT SECTION */
+
+        .insight-card {
+            background: linear-gradient(
+                120deg,
+                #e0f8eb,
+                #f1fcf5
+            );
+            border: 1px solid #c8edda;
+            padding: 23px;
+            border-radius: 15px;
+            margin-top: 22px;
+        }
+
+        .insight-card h3 {
+            color: #087f50;
+            margin-bottom: 12px;
+        }
+
+        .insight-card p {
+            font-size: 14px;
+            line-height: 1.8;
+            color: #426552;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 35px 10px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        /* RESPONSIVE */
+
+        @media(max-width: 1100px) {
+
+            .summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+        @media(max-width: 800px) {
+
+            .sidebar {
+                width: 190px;
+            }
+
+            .main {
+                margin-left: 190px;
+                width: calc(100% - 190px);
+                padding: 20px;
+            }
+
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+        @media(max-width: 600px) {
+
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+
+            .layout {
+                display: block;
+            }
+
+            .main {
+                margin-left: 0;
+                width: 100%;
+                padding: 17px;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+
+            .summary-card {
+                padding: 15px;
+            }
+
+            .card-value {
+                font-size: 19px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+            }
+
+            .topbar h1 {
+                font-size: 22px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="logo">PaisaFlow</div>
+
+        <div class="logo-subtitle">
+            Personal Finance Manager
+        </div>
+
+        <div class="nav-heading">MAIN MENU</div>
+
+        <a href="{{ url_for('dashboard') }}" class="nav-link">
+            🏠 Dashboard
+        </a>
+
+        <div class="nav-heading">FINANCE</div>
+
+        <a href="{{ url_for('analytics') }}"
+           class="nav-link active">
+            📊 Analytics
+        </a>
+
+        <a href="{{ url_for('dashboard') }}"
+           class="nav-link">
+            💰 Budget Planner
+        </a>
+
+        <a href="{{ url_for('investment') }}"
+           class="nav-link">
+            🎯 Savings & Investment
+        </a>
+
+        <a href="{{ url_for('calendar') }}"
+           class="nav-link">
+            📅 Calendar
+        </a>
+
+        <div class="nav-heading">TOOLS</div>
+
+        <a href="{{ url_for('explore_investments') }}"
+           class="nav-link">
+            🧮 Financial Tools
+        </a>
+
+        <div class="nav-heading">ACCOUNT</div>
+
+        <a href="{{ url_for('profile') }}"
+           class="nav-link">
+            👤 Profile
+        </a>
+
+        <a href="{{ url_for('logout') }}"
+           class="nav-link">
+            🚪 Logout
+        </a>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+
+    <main class="main">
+
+        <div class="topbar">
+
+            <div>
+
+                <h1>Financial Analytics 📊</h1>
+
+                <p>
+                    Understand your spending habits and financial performance.
+                </p>
+
+            </div>
+
+            <div class="user-badge">
+
+                👋 {{ name }}
+
+            </div>
+
+        </div>
+
+
+        <!-- SUMMARY CARDS -->
+
+        <section class="summary-grid">
+
+            <div class="summary-card">
+
+                <div class="card-icon green">💰</div>
+
+                <div class="card-label">
+                    Monthly Income
+                </div>
+
+                <div class="card-value">
+                    ₹{{ "%.2f"|format(monthly_income) }}
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="card-icon red">💸</div>
+
+                <div class="card-label">
+                    Monthly Expenses
+                </div>
+
+                <div class="card-value">
+                    ₹{{ "%.2f"|format(current_expense) }}
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="card-icon blue">💵</div>
+
+                <div class="card-label">
+                    Remaining Balance
+                </div>
+
+                <div class="card-value
+                    {% if remaining_balance < 0 %}red{% else %}green{% endif %}">
+
+                    ₹{{ "%.2f"|format(remaining_balance) }}
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="card-icon purple">🧾</div>
+
+                <div class="card-label">
+                    Transactions This Month
+                </div>
+
+                <div class="card-value">
+                    {{ total_transactions }}
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- CHARTS -->
+
+        <section class="chart-grid">
+
+
+            <!-- CATEGORY CHART -->
+
+            <div class="chart-card">
+
+                <h3>Category-wise Expenses</h3>
+
+                <p class="chart-description">
+                    Where your money is being spent this month.
+                </p>
+
+                {% if category_labels %}
+
+                <div class="chart-container">
+
+                    <canvas id="categoryChart"></canvas>
+
+                </div>
+
+                {% else %}
+
+                <div class="empty-message">
+                    No expenses recorded this month.
+                </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- MONTHLY TREND -->
+
+            <div class="chart-card">
+
+                <h3>Monthly Spending Trend</h3>
+
+                <p class="chart-description">
+                    Your expenses over the last six months.
+                </p>
+
+                <div class="chart-container">
+
+                    <canvas id="monthlyChart"></canvas>
+
+                </div>
+
+            </div>
+
+
+            <!-- INCOME VS EXPENSE -->
+
+            <div class="chart-card">
+
+                <h3>Income vs Expenses</h3>
+
+                <p class="chart-description">
+                    Comparison of your monthly financial position.
+                </p>
+
+                <div class="chart-container">
+
+                    <canvas id="incomeChart"></canvas>
+
+                </div>
+
+            </div>
+
+
+            <!-- SAVINGS OVERVIEW -->
+
+            <div class="chart-card">
+
+                <h3>Savings Overview</h3>
+
+                <p class="chart-description">
+                    Your remaining income compared to expenses.
+                </p>
+
+                <div class="chart-container">
+
+                    <canvas id="savingsChart"></canvas>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- FINANCIAL INSIGHTS -->
+
+        <div class="insight-card">
+
+            <h3>💡 Financial Insights</h3>
+
+            <p>
+
+                Your highest spending category is
+
+                <strong>{{ highest_category }}</strong>.
+
+                Your current savings percentage is
+
+                <strong>
+                    {{ "%.1f"|format(savings_percentage) }}%
+                </strong>.
+
+                {% if monthly_income <= 0 %}
+
+                    Set your monthly income from the Dashboard
+                    to get a better understanding of your finances.
+
+                {% elif current_expense > monthly_income %}
+
+                    Your expenses have exceeded your monthly income.
+                    Consider reviewing your spending.
+
+                {% elif savings_percentage >= 20 %}
+
+                    Great! You are maintaining a savings rate of
+                    at least 20%. Keep it up!
+
+                {% else %}
+
+                    Try reducing unnecessary expenses to improve
+                    your monthly savings.
+
+                {% endif %}
+
+            </p>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<!-- CHART JAVASCRIPT -->
+
+<script>
+
+    // CATEGORY-WISE EXPENSE CHART
+
+    const categoryLabels =
+        {{ category_labels | tojson }};
+
+    const categoryAmounts =
+        {{ category_amounts | tojson }};
+
+
+    if (document.getElementById("categoryChart")) {
+
+        new Chart(
+            document.getElementById("categoryChart"),
+            {
+
+                type: "doughnut",
+
+                data: {
+
+                    labels: categoryLabels,
+
+                    datasets: [{
+
+                        data: categoryAmounts,
+
+                        backgroundColor: [
+                            "#16a36a",
+                            "#3986dc",
+                            "#f5a623",
+                            "#8b65d8",
+                            "#e05a5a",
+                            "#24b8b0",
+                            "#a0a0a0"
+                        ],
+
+                        borderWidth: 2,
+
+                        borderColor: "#ffffff"
+
+                    }]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    plugins: {
+
+                        legend: {
+
+                            position: "bottom"
+
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+
+    }
+
+
+    // MONTHLY SPENDING TREND
+
+    const monthlyLabels =
+        {{ monthly_labels | tojson }};
+
+    const monthlyData =
+        {{ monthly_expenses | tojson }};
+
+
+    new Chart(
+        document.getElementById("monthlyChart"),
+        {
+
+            type: "line",
+
+            data: {
+
+                labels: monthlyLabels,
+
+                datasets: [{
+
+                    label: "Monthly Expenses",
+
+                    data: monthlyData,
+
+                    borderColor: "#16a36a",
+
+                    backgroundColor: "rgba(22,163,106,0.12)",
+
+                    fill: true,
+
+                    tension: 0.4,
+
+                    pointRadius: 5
+
+                }]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                plugins: {
+
+                    legend: {
+
+                        display: false
+
+                    }
+
+                },
+
+                scales: {
+
+                    y: {
+
+                        beginAtZero: true
+
+                    }
+
+                }
+
+            }
+
+        }
+    );
+
+
+    // INCOME VS EXPENSE CHART
+
+    const incomeLabels =
+        {{ income_labels | tojson }};
+
+    const incomeData =
+        {{ income_values | tojson }};
+
+
+    new Chart(
+        document.getElementById("incomeChart"),
+        {
+
+            type: "bar",
+
+            data: {
+
+                labels: incomeLabels,
+
+                datasets: [{
+
+                    label: "Amount (₹)",
+
+                    data: incomeData,
+
+                    backgroundColor: [
+                        "#3986dc",
+                        "#e05a5a",
+                        "#16a36a"
+                    ],
+
+                    borderRadius: 7
+
+                }]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                plugins: {
+
+                    legend: {
+
+                        display: false
+
+                    }
+
+                },
+
+                scales: {
+
+                    y: {
+
+                        beginAtZero: true
+
+                    }
+
+                }
+
+            }
+
+        }
+    );
+
+
+    // SAVINGS OVERVIEW CHART
+
+    const savingsIncome =
+        {{ monthly_income }};
+
+    const savingsExpense =
+        {{ current_expense }};
+
+    const positiveSavings =
+        Math.max(savingsIncome - savingsExpense, 0);
+
+    const expenseForChart =
+        Math.min(savingsExpense, savingsIncome);
+
+
+    new Chart(
+        document.getElementById("savingsChart"),
+        {
+
+            type: "doughnut",
+
+            data: {
+
+                labels: [
+                    "Expenses",
+                    "Remaining Income"
+                ],
+
+                datasets: [{
+
+                    data: [
+                        expenseForChart,
+                        positiveSavings
+                    ],
+
+                    backgroundColor: [
+                        "#e05a5a",
+                        "#16a36a"
+                    ],
+
+                    borderWidth: 2,
+
+                    borderColor: "#ffffff"
+
+                }]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                plugins: {
+
+                    legend: {
+
+                        position: "bottom"
+
+                    }
+
+                }
+
+            }
+
+        }
+    );
+
+</script>
+
+</body>
+</html>

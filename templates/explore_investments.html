@@ -1,0 +1,1675 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>PaisaFlow – Explore Investments</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --cream: #f6f5ef;
+            --ink: #11201a;
+            --muted: #5d6a63;
+            --green: #0b5d3e;
+            --deep: #0a2e22;
+            --deep2: #12402f;
+            --mint: #a8ddb5;
+            --lime: #e4f2c2;
+            --line: #dcdfd5;
+            --low: #2f9e6b;
+            --mod: #d9a21b;
+            --high: #e8836b;
+            --vhigh: #c4453a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+            color: var(--ink);
+           
+        }
+
+        .wrap {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ================= HEADER ================= */
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 22px 0;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            font-size: 22px;
+            letter-spacing: -.03em;
+            white-space: nowrap;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: var(--green);
+            color: #fff;
+            display: grid;
+            place-items: center;
+            font-weight: 800;
+            font-size: 22px;
+            box-shadow: 0 8px 18px -8px rgba(11, 93, 62, .6);
+        }
+
+        /* Premium Back to Dashboard Button */
+
+        .back-dashboard-btn {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+
+            padding: 12px 20px;
+            border-radius: 14px;
+
+            background: linear-gradient(135deg, #0b5d3e, #12865b);
+            color: #ffffff;
+
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            white-space: nowrap;
+
+            border: 1px solid rgba(168, 221, 181, .45);
+
+            box-shadow: 0 6px 18px rgba(11, 93, 62, .16);
+
+            transition:
+                background .25s ease,
+                box-shadow .25s ease,
+                transform .25s ease,
+                border-color .25s ease;
+        }
+
+        .back-dashboard-btn .back-arrow {
+            display: inline-block;
+            font-size: 21px;
+            line-height: 1;
+            transition: transform .25s ease;
+        }
+
+        .back-dashboard-btn:hover {
+            background: linear-gradient(135deg, #12865b, #159b69);
+            color: #ffffff;
+            border-color: var(--mint);
+
+            transform: translateY(-2px);
+
+            box-shadow: 0 10px 24px rgba(11, 93, 62, .24);
+        }
+
+        .back-dashboard-btn:hover .back-arrow {
+            transform: translateX(-4px);
+        }
+
+        .back-dashboard-btn:active {
+            transform: translateY(0) scale(.98);
+        }
+
+        .back-dashboard-btn:focus-visible {
+            outline: 3px solid var(--mint);
+            outline-offset: 4px;
+        }
+
+        /* ================= HERO ================= */
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+            margin-top: 28px;
+            border-radius: 36px;
+            padding: 64px 48px;
+            color: #e9f3ec;
+            background: linear-gradient(160deg, var(--deep2), var(--deep) 65%);
+            box-shadow: 0 40px 80px -45px rgba(10, 46, 34, .8);
+        }
+
+        .hero::before,
+        .hero::after {
+            content: "";
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid rgba(168, 221, 181, .18);
+            pointer-events: none;
+        }
+
+        .hero::before {
+            width: 620px;
+            height: 620px;
+            right: -180px;
+            top: -220px;
+            background: radial-gradient(circle, rgba(168, 221, 181, .22), transparent 65%);
+        }
+
+        .hero::after {
+            width: 380px;
+            height: 380px;
+            right: 40px;
+            bottom: -200px;
+        }
+
+        .hero > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: clamp(38px, 6vw, 68px);
+            line-height: 1;
+            letter-spacing: -.055em;
+            font-weight: 800;
+            max-width: 640px;
+        }
+
+        .hero h1 span {
+            color: var(--mint);
+        }
+
+        .hero p {
+            margin: 18px 0 28px;
+            font-size: 17px;
+            line-height: 1.65;
+            color: #b9d6c6;
+            max-width: 520px;
+        }
+
+        /* Search */
+
+        .search {
+            display: flex;
+            gap: 10px;
+            max-width: 600px;
+            background: rgba(255, 255, 255, .08);
+            border: 1px solid rgba(255, 255, 255, .14);
+            border-radius: 20px;
+            padding: 8px;
+        }
+
+        .search:focus-within {
+            border-color: var(--mint);
+            box-shadow: 0 0 0 3px rgba(168, 221, 181, .12);
+        }
+
+        .search input {
+            flex: 1;
+            min-width: 0;
+            background: transparent;
+            border: 0;
+            outline: 0;
+            color: #fff;
+            font: inherit;
+            font-size: 16px;
+            padding: 10px 12px;
+        }
+
+        .search input::placeholder {
+            color: #8fb09f;
+        }
+
+        .btn {
+            font: inherit;
+            font-weight: 700;
+            font-size: 15px;
+            border: 0;
+            cursor: pointer;
+            background: var(--mint);
+            color: var(--deep);
+            padding: 0 22px;
+            border-radius: 14px;
+            text-decoration: none;
+            display: inline-grid;
+            place-items: center;
+            transition: background .2s ease, transform .2s ease;
+        }
+
+        .btn:hover {
+            background: #bfeacb;
+            transform: translateY(-1px);
+        }
+
+        .floaters {
+            position: absolute !important;
+            right: 48px;
+            top: 64px;
+            display: grid;
+            gap: 14px;
+            width: 230px;
+        }
+
+        .chip-f {
+            background: rgba(255, 255, 255, .1);
+            border: 1px solid rgba(255, 255, 255, .16);
+            backdrop-filter: blur(6px);
+            border-radius: 18px;
+            padding: 14px 16px;
+            font-size: 13px;
+            color: #cfe5d8;
+        }
+
+        .chip-f b {
+            display: block;
+            font-size: 20px;
+            color: #fff;
+            letter-spacing: -.02em;
+            margin-top: 2px;
+        }
+
+        .chip-f:nth-child(2) {
+            margin-left: 36px;
+        }
+
+        /* ================= SECTIONS ================= */
+
+        h2 {
+            font-size: clamp(28px, 4vw, 40px);
+            letter-spacing: -.045em;
+            line-height: 1.05;
+        }
+
+        .sec {
+            padding: 64px 0 0;
+        }
+
+        .sec-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .sec-head p {
+            color: var(--muted);
+            font-size: 15px;
+            margin-top: 8px;
+            max-width: 520px;
+            line-height: 1.6;
+        }
+
+        /* Risk Filters */
+
+        .filters {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .f {
+            font: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 9px 14px;
+            border-radius: 999px;
+            border: 1px solid var(--line);
+            background: #fffffa;
+            color: var(--ink);
+            cursor: pointer;
+            transition: all .2s ease;
+        }
+
+        .f:hover {
+            background: #e1f1e4;
+        }
+
+        .f[aria-pressed="true"] {
+            background: var(--green);
+            border-color: var(--green);
+            color: #fff;
+        }
+
+        .active-note {
+            display: none;
+            margin-bottom: 16px;
+            font-size: 14px;
+            color: var(--green);
+            font-weight: 600;
+        }
+
+        .active-note.show {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .active-note button {
+            font: inherit;
+            font-size: 12px;
+            border: 1px solid var(--line);
+            background: #fff;
+            border-radius: 999px;
+            padding: 5px 12px;
+            cursor: pointer;
+        }
+
+        /* ================= INVESTMENT CARDS ================= */
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            font: inherit;
+            color: inherit;
+            background: #fffffa;
+            border: 1px solid var(--line);
+            border-radius: 26px;
+            padding: 0;
+            overflow: hidden;
+            cursor: pointer;
+
+            transition:
+                transform .2s ease,
+                box-shadow .2s ease,
+                border-color .2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 24px 40px -24px rgba(10, 46, 34, .35);
+            border-color: #b9d9c0;
+        }
+
+        .card:focus-visible {
+            outline: 3px solid var(--green);
+            outline-offset: 3px;
+        }
+
+        .art {
+            height: 120px;
+            display: grid;
+            place-items: center;
+            font-size: 52px;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--t1), var(--t2));
+        }
+
+        .art::after {
+            content: "";
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, .5);
+            right: -40px;
+            top: -60px;
+        }
+
+        .art span {
+            filter: drop-shadow(0 8px 10px rgba(0, 0, 0, .18));
+        }
+
+        .body {
+            padding: 18px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .card h3 {
+            font-size: 20px;
+            letter-spacing: -.03em;
+        }
+
+        .tag {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--green);
+            background: #e1f1e4;
+            padding: 4px 10px;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+
+        .card p {
+            font-size: 14px;
+            line-height: 1.55;
+            color: var(--muted);
+            flex: 1;
+        }
+
+        .risk {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .dots {
+            display: flex;
+            gap: 3px;
+        }
+
+        .dots i {
+            width: 16px;
+            height: 6px;
+            border-radius: 3px;
+            background: #e3e6dc;
+        }
+
+        .r0 i.on {
+            background: var(--low);
+        }
+
+        .r1 i.on {
+            background: var(--mod);
+        }
+
+        .r2 i.on {
+            background: var(--high);
+        }
+
+        .r3 i.on {
+            background: var(--vhigh);
+        }
+
+        .cta {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--green);
+            margin-top: 4px;
+        }
+
+        .card:hover .cta {
+            text-decoration: underline;
+        }
+
+        .empty {
+            display: none;
+            text-align: center;
+            padding: 48px 20px;
+            color: var(--muted);
+        }
+
+        /* ================= AUDIENCE SECTION ================= */
+
+        .aud {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .a {
+            border-radius: 28px;
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .a:nth-child(1) {
+            background: #e1f1e4;
+        }
+
+        .a:nth-child(2) {
+            background: var(--deep);
+            color: #e9f3ec;
+        }
+
+        .a:nth-child(3) {
+            background: #f3e7d3;
+        }
+
+        .a h3 {
+            font-size: 22px;
+            letter-spacing: -.03em;
+        }
+
+        .a li {
+            font-size: 14px;
+            line-height: 1.55;
+            margin-left: 18px;
+            margin-bottom: 6px;
+        }
+
+        .a ul {
+            flex: 1;
+            padding-left: 0;
+        }
+
+        .a button {
+            font: inherit;
+            font-weight: 700;
+            font-size: 14px;
+            border: 0;
+            border-radius: 14px;
+            padding: 12px 16px;
+            cursor: pointer;
+            background: var(--green);
+            color: #fff;
+            align-self: flex-start;
+            transition: transform .2s ease, opacity .2s ease;
+        }
+
+        .a button:hover {
+            transform: translateY(-2px);
+            opacity: .92;
+        }
+
+        .a:nth-child(2) button {
+            background: var(--mint);
+            color: var(--deep);
+        }
+
+        .small {
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 14px;
+            line-height: 1.6;
+        }
+
+        /* ================= COMPARISON TABLE ================= */
+
+        .tw {
+            overflow-x: auto;
+            border: 1px solid var(--line);
+            border-radius: 24px;
+            background: #fffffa;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 720px;
+            font-size: 14px;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        th {
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 700;
+            background: #f2f1e8;
+        }
+
+        tr:last-child td {
+            border-bottom: 0;
+        }
+
+        td:first-child {
+            font-weight: 700;
+        }
+
+        .pill {
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 999px;
+            color: #fff;
+            white-space: nowrap;
+        }
+
+        .p0 {
+            background: var(--low);
+        }
+
+        .p1 {
+            background: var(--mod);
+        }
+
+        .p2 {
+            background: var(--high);
+        }
+
+        .p3 {
+            background: var(--vhigh);
+        }
+
+        /* ================= FOOTER ================= */
+
+        footer {
+            margin-top: 64px;
+            padding: 24px 0 56px;
+            border-top: 1px solid var(--line);
+            font-size: 13px;
+            line-height: 1.7;
+            color: var(--muted);
+            max-width: 820px;
+        }
+
+        /* ================= LEARNING MODAL ================= */
+
+        dialog {
+            border: 0;
+            padding: 0;
+            width: min(860px, 94vw);
+            max-height: 92vh;
+            border-radius: 30px;
+            background: linear-gradient(180deg, var(--deep2), var(--deep));
+            color: #e9f3ec;
+            box-shadow: 0 50px 100px -30px rgba(0, 0, 0, .6);
+            overflow: auto;
+            margin: auto;
+        }
+
+        dialog::backdrop {
+            background: rgba(6, 20, 15, .7);
+            backdrop-filter: blur(4px);
+        }
+
+        .m {
+            padding: 26px;
+        }
+
+        .mh {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+
+        .mh .ic {
+            width: 52px;
+            height: 52px;
+            flex-shrink: 0;
+            border-radius: 16px;
+            display: grid;
+            place-items: center;
+            font-size: 28px;
+            background: linear-gradient(135deg, var(--t1), var(--t2));
+        }
+
+        .mh h3 {
+            font-size: 26px;
+            letter-spacing: -.04em;
+        }
+
+        .mh .risk {
+            margin-top: 4px;
+            color: #b9d6c6;
+        }
+
+        .m > p {
+            color: #b9d6c6;
+            line-height: 1.65;
+            font-size: 15px;
+            margin-bottom: 18px;
+        }
+
+        .video {
+            aspect-ratio: 16 / 9;
+            border-radius: 20px;
+            overflow: hidden;
+            background: #071d15;
+            border: 1px solid rgba(255, 255, 255, .1);
+        }
+
+        .video iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            display: block;
+        }
+
+        .ph {
+            height: 100%;
+            display: grid;
+            place-content: center;
+            text-align: center;
+            gap: 6px;
+            padding: 20px;
+            color: #9cc3ae;
+            font-size: 14px;
+        }
+
+        .ph b {
+            color: #fff;
+            font-size: 17px;
+        }
+
+        .learn {
+            margin: 20px 0;
+        }
+
+        .learn h4 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .learn ul {
+            padding-left: 0;
+        }
+
+        .learn li {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #cfe5d8;
+            margin-left: 18px;
+            margin-bottom: 4px;
+        }
+
+        .mf {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .mf a,
+        .mf button {
+            font: inherit;
+            font-weight: 700;
+            font-size: 14px;
+            padding: 13px 20px;
+            border-radius: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            border: 1px solid rgba(255, 255, 255, .2);
+            background: transparent;
+            color: #fff;
+            transition: transform .2s ease, background .2s ease;
+        }
+
+        .mf a {
+            background: var(--mint);
+            color: var(--deep);
+            border-color: var(--mint);
+        }
+
+        .mf a:hover,
+        .mf button:hover {
+            transform: translateY(-2px);
+        }
+
+        .mf button:hover {
+            background: rgba(255, 255, 255, .08);
+        }
+
+        .note {
+            margin-top: 14px;
+            font-size: 12px !important;
+            color: #8fb09f !important;
+        }
+
+        :focus-visible {
+            outline: 2px solid var(--green);
+            outline-offset: 2px;
+        }
+
+        .hero :focus-visible,
+        dialog :focus-visible {
+            outline-color: var(--mint);
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 960px) {
+            .floaters {
+                display: none;
+            }
+
+            .hero {
+                padding: 44px 24px;
+            }
+        }
+
+        @media (max-width: 860px) {
+            .aud {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .wrap {
+                padding: 0 16px;
+            }
+
+            header {
+                gap: 10px;
+                padding: 16px 0;
+            }
+
+            .brand {
+                font-size: 18px;
+                gap: 7px;
+            }
+
+            .logo {
+                width: 35px;
+                height: 35px;
+                font-size: 19px;
+                border-radius: 10px;
+            }
+
+            .back-dashboard-btn {
+                padding: 10px 11px;
+                gap: 6px;
+                font-size: 11px;
+                border-radius: 11px;
+            }
+
+            .back-dashboard-btn .back-arrow {
+                font-size: 17px;
+            }
+
+            .hero {
+                margin-top: 20px;
+                padding: 38px 22px;
+                border-radius: 25px;
+            }
+
+            .hero h1 {
+                font-size: clamp(36px, 10vw, 48px);
+                line-height: 1.05;
+            }
+
+            .hero p {
+                font-size: 14px;
+                margin: 16px 0 22px;
+            }
+
+            .search {
+                flex-direction: column;
+                border-radius: 16px;
+            }
+
+            .search input {
+                width: 100%;
+                font-size: 14px;
+            }
+
+            .btn {
+                min-height: 44px;
+                padding: 12px;
+            }
+
+            .sec {
+                padding-top: 44px;
+            }
+
+            .sec-head {
+                align-items: flex-start;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .a {
+                padding: 22px;
+            }
+
+            .m {
+                padding: 20px;
+            }
+
+            .mh h3 {
+                font-size: 22px;
+            }
+
+            .mf a,
+            .mf button {
+                padding: 12px 15px;
+            }
+
+            footer {
+                margin-top: 44px;
+                padding-bottom: 35px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .brand {
+                font-size: 16px;
+            }
+
+            .back-dashboard-btn {
+                padding: 9px 8px;
+                font-size: 10px;
+                gap: 4px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                transition: none !important;
+                animation: none !important;
+                scroll-behavior: auto !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+
+        <!-- HEADER -->
+        <header>
+            <div class="brand">
+                <div class="logo">P</div>
+                <span>PaisaFlow</span>
+            </div>
+
+            <a href="{{ url_for('dashboard') }}" class="back-dashboard-btn">
+                <span class="back-arrow" aria-hidden="true">←</span>
+                <span>Back to Dashboard</span>
+            </a>
+        </header>
+
+        <!-- HERO SECTION -->
+        <section class="hero">
+            <h1>Explore Your <span>Investment Universe</span></h1>
+
+            <p>
+                Discover different ways to grow your money. Learn the basics,
+                understand the risks, and make informed financial decisions.
+            </p>
+
+            <form class="search" id="searchForm" role="search">
+                <input
+                    id="q"
+                    type="search"
+                    placeholder="What do you want to learn about investing?"
+                    aria-label="Search investments"
+                >
+                <button class="btn" type="submit">Start Exploring</button>
+            </form>
+
+            <div class="floaters" aria-hidden="true">
+                <div class="chip-f">
+                    Small steps
+                    <b>₹500 a month</b>
+                </div>
+
+                <div class="chip-f">
+                    Time in the market
+                    <b>Starts with learning</b>
+                </div>
+            </div>
+        </section>
+
+        <!-- INVESTMENT CATEGORIES -->
+        <section class="sec" id="explore">
+            <div class="sec-head">
+                <div>
+                    <h2>Investment categories</h2>
+                    <p>
+                        Pick a card to watch a short lesson and see what to know
+                        before you start.
+                    </p>
+                </div>
+
+                <div class="filters" id="filters" role="group" aria-label="Filter by risk level"></div>
+            </div>
+
+            <div class="active-note" id="activeNote"></div>
+
+            <div class="grid" id="grid"></div>
+
+            <div class="empty" id="empty">
+                <b>No matches yet.</b>
+                <br>
+                Try another word, like “gold”, “SIP” or “safe”.
+            </div>
+        </section>
+
+        <!-- AUDIENCE SECTION -->
+        <section class="sec">
+            <div class="sec-head">
+                <div>
+                    <h2>Where should you start?</h2>
+                    <p>
+                        Three common starting points, based on where you are right now.
+                    </p>
+                </div>
+            </div>
+
+            <div class="aud">
+                <div class="a">
+                    <h3>For Students</h3>
+
+                    <ul>
+                        <li>Start with financial literacy.</li>
+                        <li>Learn about savings accounts, SIPs, mutual funds, and emergency savings.</li>
+                        <li>Focus on small investments and understanding risk.</li>
+                    </ul>
+
+                    <button type="button" data-aud="students">Show these topics</button>
+                </div>
+
+                <div class="a">
+                    <h3>For Working Professionals</h3>
+
+                    <ul>
+                        <li>Explore SIPs, mutual funds, ETFs, stocks, PPF, and retirement planning.</li>
+                        <li>Understand long-term wealth creation.</li>
+                    </ul>
+
+                    <button type="button" data-aud="pros">Show these topics</button>
+                </div>
+
+                <div class="a">
+                    <h3>For Freelancers &amp; Gig Workers</h3>
+
+                    <ul>
+                        <li>Learn about emergency funds, flexible savings, liquid funds, FDs, and tax planning.</li>
+                        <li>Focus on managing irregular income.</li>
+                    </ul>
+
+                    <button type="button" data-aud="gig">Show these topics</button>
+                </div>
+            </div>
+
+            <p class="small">
+                These are educational starting points, not personalized investment recommendations.
+            </p>
+        </section>
+
+        <!-- COMPARISON TABLE -->
+        <section class="sec">
+            <div class="sec-head">
+                <div>
+                    <h2>Compare at a glance</h2>
+                    <p>
+                        Risk and liquidity vary by specific instrument and market conditions.
+                        Use this table as a general guide for learning, not for choosing.
+                    </p>
+                </div>
+            </div>
+
+            <div class="tw">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Investment</th>
+                            <th>General risk</th>
+                            <th>Typical horizon</th>
+                            <th>Liquidity</th>
+                            <th>Good to learn first?</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="rows"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer>
+            PaisaFlow is an educational platform. The information provided is intended
+            to improve financial literacy and does not constitute financial, investment,
+            or tax advice. Investments involve risks, including possible loss of capital.
+            Always research an investment before making decisions.
+        </footer>
+
+    </div>
+
+    <!-- LEARNING MODAL -->
+    <dialog id="modal" aria-labelledby="mTitle">
+        <div class="m" id="mBody"></div>
+    </dialog>
+
+    <script>
+        /* ================= INVESTMENT DATA ================= */
+
+        const RISK = ["Low", "Moderate", "High", "Very High"];
+
+        const INVESTMENTS = [
+            {
+                id: "gold",
+                name: "Gold",
+                icon: "🪙",
+                t: ["#fbe9b7", "#f0c969"],
+                risk: 1,
+                beginner: true,
+                videoId: "TODO_GOLD",
+                desc: "Physical gold, digital gold, Gold ETFs and Sovereign Gold Bonds (where available).",
+                horizon: "Long term (5+ years)",
+                liquidity: "Moderate to high, depends on the form",
+                learn: [
+                    "How physical, digital and ETF gold differ",
+                    "What Sovereign Gold Bonds are and when they are offered",
+                    "Why gold prices move and what that means for risk"
+                ]
+            },
+            {
+                id: "stocks",
+                name: "Stocks",
+                icon: "📈",
+                t: ["#cdeed6", "#8fd3a6"],
+                risk: 2,
+                beginner: false,
+                videoId: "TODO_STOCKS",
+                desc: "Understand the stock market, equity shares, and how to buy your first stock.",
+                horizon: "Long term (5+ years)",
+                liquidity: "High during market hours",
+                learn: [
+                    "What a share is and why prices change",
+                    "How a demat account and trading work",
+                    "How to research a company before buying"
+                ]
+            },
+            {
+                id: "mutual-funds",
+                name: "Mutual Funds",
+                icon: "🧺",
+                t: ["#d6e8fb", "#9cc4ee"],
+                risk: 1,
+                beginner: true,
+                videoId: "TODO_MUTUAL_FUNDS",
+                desc: "Professionally managed funds that pool money from many investors.",
+                horizon: "Medium to long term (3+ years)",
+                liquidity: "Moderate to high; exit loads or lock-ins may apply",
+                learn: [
+                    "How a mutual fund works",
+                    "Equity, debt and hybrid funds in simple terms",
+                    "What expense ratios and NAV mean"
+                ]
+            },
+            {
+                id: "sip",
+                name: "SIP",
+                icon: "🔁",
+                t: ["#e4f2c2", "#b9dc7b"],
+                risk: 1,
+                beginner: true,
+                videoId: "TODO_SIP",
+                desc: "Learn systematic monthly investing, a habit of investing a fixed amount regularly.",
+                horizon: "Medium to long term (3+ years)",
+                liquidity: "Depends on the fund you invest in",
+                learn: [
+                    "How a SIP works month by month",
+                    "Why regular investing can smooth out market swings",
+                    "How to choose an amount you can keep up"
+                ]
+            },
+            {
+                id: "etfs",
+                name: "ETFs",
+                icon: "🧭",
+                t: ["#dcd7f5", "#aaa0e6"],
+                risk: 1,
+                beginner: true,
+                videoId: "TODO_ETFS",
+                desc: "Exchange-traded funds and index investing, explained simply.",
+                horizon: "Long term (5+ years)",
+                liquidity: "High during market hours",
+                learn: [
+                    "What an ETF is and how it tracks an index",
+                    "How ETFs differ from mutual funds",
+                    "What tracking error and costs mean"
+                ]
+            },
+            {
+                id: "crypto",
+                name: "Cryptocurrency",
+                icon: "₿",
+                t: ["#fcd9c8", "#f2a583"],
+                risk: 3,
+                beginner: false,
+                videoId: "TODO_CRYPTO",
+                desc: "Bitcoin, Ethereum, blockchain, and the risks that come with crypto.",
+                horizon: "Highly uncertain; prices swing sharply",
+                liquidity: "High on exchanges, but prices can be volatile",
+                learn: [
+                    "What blockchain and crypto assets are",
+                    "Why prices are so volatile",
+                    "Risks like scams, regulation and tax rules"
+                ]
+            },
+            {
+                id: "fd",
+                name: "Fixed Deposits",
+                icon: "🏦",
+                t: ["#d4ecea", "#93cfc9"],
+                risk: 0,
+                beginner: true,
+                videoId: "TODO_FD",
+                desc: "Bank fixed deposits and how interest works.",
+                horizon: "Short to medium term (1–5 years)",
+                liquidity: "Moderate; early withdrawal may reduce interest",
+                learn: [
+                    "How FD interest is calculated",
+                    "Cumulative vs payout options",
+                    "How interest is taxed"
+                ]
+            },
+            {
+                id: "bonds",
+                name: "Government Bonds",
+                icon: "🏛️",
+                t: ["#e7dfd0", "#c9b998"],
+                risk: 0,
+                beginner: false,
+                videoId: "TODO_BONDS",
+                desc: "Government securities and bonds, a way of lending to the government.",
+                horizon: "Medium to long term (1–10+ years)",
+                liquidity: "Moderate; prices can move with interest rates",
+                learn: [
+                    "What a government security is",
+                    "How bond prices and interest rates relate",
+                    "Ways retail investors can access them"
+                ]
+            },
+            {
+                id: "reits",
+                name: "REITs",
+                icon: "🏢",
+                t: ["#d9e4f2", "#a3bddd"],
+                risk: 1,
+                beginner: false,
+                videoId: "TODO_REITS",
+                desc: "Invest in real estate through listed trusts, without buying property.",
+                horizon: "Long term (5+ years)",
+                liquidity: "Moderate to high on exchanges",
+                learn: [
+                    "How a REIT earns and distributes income",
+                    "How REITs differ from owning property",
+                    "Key risks like vacancy and interest rates"
+                ]
+            },
+            {
+                id: "ppf",
+                name: "PPF",
+                icon: "🌱",
+                t: ["#d3eed9", "#8ed0a0"],
+                risk: 0,
+                beginner: true,
+                videoId: "TODO_PPF",
+                desc: "The Public Provident Fund, a government-backed long-term savings scheme.",
+                horizon: "Very long term (15-year lock-in)",
+                liquidity: "Low; partial withdrawals only after set years",
+                learn: [
+                    "How PPF accounts and limits work",
+                    "Why the lock-in matters",
+                    "How PPF fits into long-term saving"
+                ]
+            },
+            {
+                id: "nps",
+                name: "NPS",
+                icon: "🌅",
+                t: ["#fde3c4", "#f3b97b"],
+                risk: 1,
+                beginner: false,
+                videoId: "TODO_NPS",
+                desc: "The National Pension System, built for retirement savings.",
+                horizon: "Until retirement",
+                liquidity: "Low; withdrawals are restricted",
+                learn: [
+                    "How NPS tiers and fund choices work",
+                    "Rules for withdrawal and annuity",
+                    "How NPS is taxed"
+                ]
+            },
+            {
+                id: "emergency",
+                name: "Emergency Funds",
+                icon: "🛟",
+                t: ["#cdeaf2", "#8cc9db"],
+                risk: 0,
+                beginner: true,
+                videoId: "TODO_EMERGENCY",
+                desc: "Build a financial safety net before you invest.",
+                horizon: "Always ready to use",
+                liquidity: "Very high; easy to access",
+                learn: [
+                    "Why an emergency fund comes first",
+                    "How much to set aside, in simple steps",
+                    "Where to keep it so it stays safe and accessible"
+                ]
+            }
+        ];
+
+        const AUDIENCES = {
+            students: {
+                label: "Students",
+                ids: ["emergency", "sip", "mutual-funds"]
+            },
+            pros: {
+                label: "Working Professionals",
+                ids: ["sip", "mutual-funds", "etfs", "stocks", "ppf", "nps"]
+            },
+            gig: {
+                label: "Freelancers & Gig Workers",
+                ids: ["emergency", "fd", "mutual-funds", "ppf"]
+            }
+        };
+
+        /* ================= STATE AND HELPERS ================= */
+
+        const state = {
+            q: "",
+            risk: null,
+            aud: null
+        };
+
+        const $ = id => document.getElementById(id);
+
+        const esc = s =>
+            String(s).replace(/[&<>"']/g, c => ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;"
+            }[c]));
+
+        const dots = r =>
+            `<span class="risk r${r}">
+                <span class="dots">
+                    ${[0, 1, 2, 3].map(i =>
+                        `<i class="${i <= r ? "on" : ""}"></i>`
+                    ).join("")}
+                </span>
+                ${RISK[r]} risk
+            </span>`;
+
+        const validId = id =>
+            /^[\w-]{11}$/.test(id) && !id.startsWith("TODO");
+
+        /* ================= FILTER INVESTMENTS ================= */
+
+        function visible() {
+            const q = state.q.trim().toLowerCase();
+
+            return INVESTMENTS.filter(i =>
+                (
+                    !q ||
+                    [i.name, i.desc, ...i.learn]
+                        .join(" ")
+                        .toLowerCase()
+                        .includes(q) ||
+                    (q === "safe" && i.risk === 0)
+                ) &&
+                (state.risk === null || i.risk === state.risk) &&
+                (!state.aud || AUDIENCES[state.aud].ids.includes(i.id))
+            );
+        }
+
+        /* ================= RENDER CARDS ================= */
+
+        function renderGrid() {
+            const list = visible();
+
+            $("grid").innerHTML = list.map(i => `
+                <button
+                    type="button"
+                    class="card"
+                    data-id="${i.id}"
+                    style="--t1:${i.t[0]};--t2:${i.t[1]}"
+                    aria-label="Learn how to invest in ${esc(i.name)}"
+                >
+                    <div class="art">
+                        <span>${i.icon}</span>
+                    </div>
+
+                    <div class="body">
+                        <div class="top">
+                            <h3>${esc(i.name)}</h3>
+                            ${i.beginner
+                                ? '<span class="tag">Beginner-friendly</span>'
+                                : ""}
+                        </div>
+
+                        <p>${esc(i.desc)}</p>
+
+                        ${dots(i.risk)}
+
+                        <span class="cta">Learn How to Invest →</span>
+                    </div>
+                </button>
+            `).join("");
+
+            $("empty").style.display = list.length ? "none" : "block";
+
+            const note = $("activeNote");
+
+            if (state.aud) {
+                note.innerHTML = `
+                    Showing starting topics for ${esc(AUDIENCES[state.aud].label)}
+                    <button type="button" id="clearAud">Clear</button>
+                `;
+
+                note.classList.add("show");
+
+                $("clearAud").onclick = () => {
+                    state.aud = null;
+                    renderGrid();
+                };
+            } else {
+                note.classList.remove("show");
+                note.innerHTML = "";
+            }
+        }
+
+        /* ================= RISK FILTERS ================= */
+
+        function renderFilters() {
+            const opts = [
+                { l: "All", v: null },
+                ...RISK.map((l, v) => ({ l, v }))
+            ];
+
+            $("filters").innerHTML = opts.map(o => `
+                <button
+                    type="button"
+                    class="f"
+                    data-v="${o.v}"
+                    aria-pressed="${state.risk === o.v}"
+                >
+                    ${o.l}
+                </button>
+            `).join("");
+        }
+
+        /* ================= COMPARISON TABLE ================= */
+
+        function renderTable() {
+            $("rows").innerHTML = INVESTMENTS.map(i => `
+                <tr>
+                    <td>${esc(i.name)}</td>
+                    <td><span class="pill p${i.risk}">${RISK[i.risk]}</span></td>
+                    <td>${esc(i.horizon)}</td>
+                    <td>${esc(i.liquidity)}</td>
+                    <td>${i.beginner ? "Yes" : "Learn the basics first"}</td>
+                </tr>
+            `).join("");
+        }
+
+        /* ================= LEARNING MODAL ================= */
+
+        const modal = $("modal");
+
+        function openModal(id) {
+            const i = INVESTMENTS.find(x => x.id === id);
+
+            if (!i) return;
+
+            const ok = validId(i.videoId);
+
+            const watch = ok
+                ? `https://www.youtube.com/watch?v=${i.videoId}`
+                : `https://www.youtube.com/results?search_query=${encodeURIComponent(i.name + " for beginners India")}`;
+
+            $("mBody").style.cssText =
+                `--t1:${i.t[0]};--t2:${i.t[1]}`;
+
+            $("mBody").innerHTML = `
+                <div class="mh">
+                    <div class="ic">${i.icon}</div>
+
+                    <div>
+                        <h3 id="mTitle">${esc(i.name)}</h3>
+                        ${dots(i.risk)}
+                    </div>
+                </div>
+
+                <p>${esc(i.desc)}</p>
+
+                <div class="video">
+                    ${ok
+                        ? `<iframe
+                                src="https://www.youtube.com/embed/${i.videoId}"
+                                title="${esc(i.name)} lesson"
+                                allow="accelerometer; encrypted-media; picture-in-picture"
+                                allowfullscreen
+                                loading="lazy"
+                           ></iframe>`
+                        : `<div class="ph">
+                                <b>Lesson video coming soon</b>
+                                <span>No verified video has been added for ${esc(i.name)} yet.</span>
+                           </div>`
+                    }
+                </div>
+
+                <div class="learn">
+                    <h4>What you will learn</h4>
+                    <ul>
+                        ${i.learn.map(l => `<li>${esc(l)}</li>`).join("")}
+                    </ul>
+                </div>
+
+                <div class="mf">
+                    <a href="${watch}" target="_blank" rel="noopener noreferrer">
+                        ${ok ? "Watch on YouTube" : "Search on YouTube"}
+                    </a>
+
+                    <button type="button" id="mBack">Back to Explore</button>
+                </div>
+
+                <p class="note">
+                    Educational content only, not investment advice.
+                    Risk and liquidity vary by instrument and market conditions.
+                </p>
+            `;
+
+            $("mBack").onclick = () => modal.close();
+
+            modal.showModal();
+        }
+
+        /* Close modal when clicking outside the dialog content */
+
+        modal.addEventListener("click", e => {
+            if (e.target === modal) {
+                modal.close();
+            }
+        });
+
+        /* Clear modal content when closed, stopping any playing video */
+
+        modal.addEventListener("close", () => {
+            $("mBody").innerHTML = "";
+        });
+
+        /* ================= EVENT LISTENERS ================= */
+
+        $("grid").addEventListener("click", e => {
+            const card = e.target.closest(".card");
+
+            if (card) {
+                openModal(card.dataset.id);
+            }
+        });
+
+        $("filters").addEventListener("click", e => {
+            const button = e.target.closest(".f");
+
+            if (!button) return;
+
+            state.risk = button.dataset.v === "null"
+                ? null
+                : Number(button.dataset.v);
+
+            renderFilters();
+            renderGrid();
+        });
+
+        $("q").addEventListener("input", e => {
+            state.q = e.target.value;
+            renderGrid();
+        });
+
+        $("searchForm").addEventListener("submit", e => {
+            e.preventDefault();
+
+            $("explore").scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        });
+
+        document.querySelectorAll("[data-aud]").forEach(button => {
+            button.addEventListener("click", () => {
+                state.aud = button.dataset.aud;
+
+                renderGrid();
+
+                $("explore").scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+            });
+        });
+
+        /* ================= INITIALIZE PAGE ================= */
+
+        renderFilters();
+        renderGrid();
+        renderTable();
+    </script>
+</body>
+
+</html>

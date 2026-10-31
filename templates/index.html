@@ -1,0 +1,1078 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f6f5ef">
+
+    <title>PaisaFlow | Personal Finance</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/common.css') }}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        /* ========================================
+           FINANCIAL CALENDAR FEATURE SECTION
+        ======================================== */
+
+        .pf-calendar-section {
+            padding: 75px 0;
+            position: relative;
+        }
+
+        .pf-calendar-intro {
+            max-width: 650px;
+            margin: 0 auto 35px;
+            text-align: center;
+        }
+
+        .pf-calendar-kicker {
+            display: inline-block;
+            margin-bottom: 14px;
+            color: #21865b;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+
+        .pf-calendar-intro h2 {
+            margin: 0 0 15px;
+            color: #174d38;
+            font-family: 'Manrope', sans-serif;
+            font-size: clamp(28px, 4vw, 42px);
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        .pf-calendar-intro p {
+            max-width: 520px;
+            margin: 0 auto;
+            color: #66756b;
+            font-size: 15px;
+            line-height: 1.8;
+        }
+
+        .pf-calendar-link {
+            display: block;
+            max-width: 850px;
+            margin: 0 auto;
+            color: inherit;
+            text-decoration: none;
+            border-radius: 28px;
+            outline-offset: 5px;
+        }
+
+        .pf-calendar-card {
+            position: relative;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            gap: 40px;
+
+            padding: 38px;
+
+            background:
+                radial-gradient(
+                    circle at 10% 10%,
+                    rgba(179, 226, 196, 0.45),
+                    transparent 38%
+                ),
+                linear-gradient(
+                    135deg,
+                    #ffffff 0%,
+                    #f2f8f1 55%,
+                    #e5f2e8 100%
+                );
+
+            border: 1px solid rgba(23, 107, 75, 0.15);
+            border-radius: 28px;
+
+            box-shadow: 0 16px 45px rgba(23, 74, 53, 0.08);
+            overflow: hidden;
+
+            transition:
+                transform 0.3s ease,
+                box-shadow 0.3s ease,
+                border-color 0.3s ease;
+        }
+
+        .pf-calendar-link:hover .pf-calendar-card {
+            transform: translateY(-6px);
+            border-color: rgba(23, 107, 75, 0.35);
+            box-shadow: 0 24px 55px rgba(23, 74, 53, 0.14);
+        }
+
+        .pf-calendar-card::after {
+            content: "";
+            position: absolute;
+            width: 220px;
+            height: 220px;
+            right: -100px;
+            top: -110px;
+            background: rgba(87, 168, 119, 0.12);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        /* LEFT: CALENDAR VISUAL */
+
+        .pf-calendar-visual {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 300px;
+            padding: 10px;
+        }
+
+        .pf-calendar-sheet {
+            position: relative;
+            z-index: 1;
+            width: min(100%, 290px);
+            padding: 0 20px 22px;
+
+            background: rgba(255, 255, 255, 0.96);
+            border: 1px solid #e0ebe2;
+            border-radius: 20px;
+
+            box-shadow: 0 18px 38px rgba(23, 74, 53, 0.12);
+
+            transform: rotate(-3deg);
+            transition: transform 0.3s ease;
+        }
+
+        .pf-calendar-link:hover .pf-calendar-sheet {
+            transform: rotate(0deg) scale(1.025);
+        }
+
+        .pf-calendar-sheet-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            margin: 0 -20px 20px;
+            padding: 19px 20px;
+
+            background: linear-gradient(135deg, #176b4b, #258b60);
+            color: #ffffff;
+
+            border-radius: 19px 19px 0 0;
+        }
+
+        .pf-calendar-sheet-title {
+            font-family: 'Manrope', sans-serif;
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .pf-calendar-sheet-subtitle {
+            margin-top: 4px;
+            color: rgba(255, 255, 255, 0.78);
+            font-size: 11px;
+        }
+
+        .pf-calendar-header-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            width: 43px;
+            height: 43px;
+
+            background: rgba(255, 255, 255, 0.16);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 13px;
+
+            font-size: 23px;
+        }
+
+        .pf-calendar-weekdays,
+        .pf-calendar-dates {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            gap: 7px;
+            text-align: center;
+        }
+
+        .pf-calendar-weekdays {
+            margin-bottom: 12px;
+        }
+
+        .pf-calendar-weekdays span {
+            color: #829187;
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .pf-calendar-dates span {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            aspect-ratio: 1 / 1;
+            min-width: 0;
+
+            color: #42574a;
+            font-size: 12px;
+            font-weight: 600;
+
+            border-radius: 9px;
+        }
+
+        .pf-calendar-dates .pf-date-muted {
+            color: #c0c9c2;
+        }
+
+        .pf-calendar-dates .pf-date-active {
+            background: #176b4b;
+            color: #ffffff;
+            box-shadow: 0 4px 10px rgba(23, 107, 75, 0.2);
+        }
+
+        .pf-calendar-dates .pf-date-marked {
+            position: relative;
+            background: #e7f4eb;
+            color: #176b4b;
+        }
+
+        .pf-calendar-dates .pf-date-marked::after {
+            content: "";
+            position: absolute;
+            bottom: 3px;
+            width: 4px;
+            height: 4px;
+            background: #21865b;
+            border-radius: 50%;
+        }
+
+        .pf-calendar-legend {
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+            margin-top: 19px;
+            padding-top: 15px;
+            border-top: 1px solid #edf1ed;
+        }
+
+        .pf-calendar-legend span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #718075;
+            font-size: 10px;
+        }
+
+        .pf-legend-dot {
+            width: 7px;
+            height: 7px;
+            background: #21865b;
+            border-radius: 50%;
+        }
+
+        .pf-legend-dot.pf-legend-light {
+            background: #c6e6d0;
+        }
+
+        /* RIGHT: CONTENT */
+
+        .pf-calendar-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .pf-calendar-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+
+            margin-bottom: 18px;
+            padding: 8px 12px;
+
+            color: #176b4b;
+            background: #e5f4e9;
+
+            border: 1px solid #d3eadd;
+            border-radius: 30px;
+
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .pf-calendar-badge-dot {
+            width: 7px;
+            height: 7px;
+            background: #21865b;
+            border-radius: 50%;
+        }
+
+        .pf-calendar-content h3 {
+            margin: 0 0 16px;
+
+            color: #174d38;
+            font-family: 'Manrope', sans-serif;
+
+            font-size: clamp(27px, 3vw, 36px);
+            font-weight: 800;
+            line-height: 1.22;
+        }
+
+        .pf-calendar-content h3 span {
+            color: #21865b;
+        }
+
+        .pf-calendar-description {
+            margin: 0 0 24px;
+            color: #647568;
+            font-size: 14px;
+            line-height: 1.9;
+        }
+
+        .pf-calendar-benefits {
+            display: grid;
+            gap: 13px;
+            margin-bottom: 28px;
+        }
+
+        .pf-calendar-benefit {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+
+            color: #405c49;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .pf-calendar-check {
+            display: flex;
+            flex-shrink: 0;
+            align-items: center;
+            justify-content: center;
+
+            width: 25px;
+            height: 25px;
+
+            color: #176b4b;
+            background: #e0f1e5;
+            border-radius: 50%;
+
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .pf-calendar-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 13px;
+
+            padding: 14px 20px;
+
+            color: #ffffff;
+            background: linear-gradient(135deg, #176b4b, #21865b);
+
+            border-radius: 13px;
+            box-shadow: 0 7px 17px rgba(23, 107, 75, 0.17);
+
+            font-size: 13px;
+            font-weight: 800;
+
+            transition: gap 0.25s ease;
+        }
+
+        .pf-calendar-link:hover .pf-calendar-action {
+            gap: 19px;
+        }
+
+        .pf-calendar-note {
+            margin-top: 15px;
+            color: #849187;
+            font-size: 11px;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 700px) {
+            .pf-calendar-section {
+                padding: 50px 0;
+            }
+
+            .pf-calendar-card {
+                grid-template-columns: 1fr;
+                gap: 24px;
+                padding: 23px;
+                border-radius: 23px;
+            }
+
+            .pf-calendar-visual {
+                min-height: 270px;
+            }
+
+            .pf-calendar-sheet {
+                width: min(100%, 280px);
+            }
+
+            .pf-calendar-content {
+                text-align: center;
+            }
+
+            .pf-calendar-benefits {
+                max-width: 320px;
+                margin: 0 auto 25px;
+                text-align: left;
+            }
+
+            .pf-calendar-content h3 {
+                font-size: 29px;
+            }
+
+            .pf-calendar-description {
+                font-size: 13px;
+            }
+
+            .pf-calendar-note {
+                line-height: 1.7;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .pf-calendar-card,
+            .pf-calendar-sheet,
+            .pf-calendar-action {
+                transition: none;
+            }
+        }
+    </style>
+
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+</head>
+
+<body>
+
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+
+    <!-- NAVIGATION -->
+    <header class="site-header">
+
+        <a class="brand" href="#home">
+            <span class="brand-mark">p<span>.</span></span>
+            <span class="brand-name">PaisaFlow</span>
+        </a>
+
+        <nav class="main-nav">
+            <a href="#features">Features</a>
+            <a href="#how-it-works">How it works</a>
+            <a href="#about">Our approach</a>
+        </nav>
+
+        <a class="header-cta" href="#dashboard-preview">
+            Explore dashboard <span>↗</span>
+        </a>
+
+    </header>
+
+    <main id="home">
+
+        <!-- HERO SECTION -->
+        <section class="hero section-shell">
+
+            <div class="hero-copy">
+
+                <div class="eyebrow-pill">
+                    <span class="eyebrow-dot"></span>
+                    A FRESH WAY TO SEE YOUR MONEY
+                </div>
+
+                <h1>
+                    Your money.<br>
+                    <span>Your next move.</span>
+                </h1>
+
+                <p class="hero-lead">
+                    A little more clarity in every rupee. Keep track of
+                    everyday spending, build mindful habits, and make
+                    room for what matters most.
+                </p>
+
+                <div class="hero-buttons">
+
+                    <a class="button button-primary" href="/register">
+                        Create Account <span>↗</span>
+                    </a>
+
+                    <a class="button button-quiet" href="/login">
+                        Login to PaisaFlow
+                    </a>
+
+                </div>
+
+                <div class="trust-note">
+                    <span class="trust-icon">✳</span>
+
+                    <span>
+                        <strong>Small steps, stronger habits.</strong><br>
+                        Personal finance made feel-good.
+                    </span>
+                </div>
+
+                <div class="hero-proof">
+
+                    <div class="proof-avatars">
+                        <span>₹</span>
+                        <span>↗</span>
+                        <span>✳</span>
+                    </div>
+
+                    <p>
+                        <strong>Make every rupee count.</strong><br>
+                        <span>A calmer view of your everyday finances.</span>
+                    </p>
+
+                </div>
+
+            </div>
+
+            <!-- DASHBOARD PREVIEW -->
+            <div class="hero-visual" id="dashboard-preview">
+
+                <div class="visual-orbit orbit-one"></div>
+                <div class="visual-orbit orbit-two"></div>
+
+                <div class="dashboard-card">
+
+                    <div class="dashboard-topline">
+
+                        <div class="dashboard-brand">
+                            <span class="mini-brand-mark">p.</span>
+                            <span>Money overview</span>
+                        </div>
+
+                        <button class="more-button" type="button">
+                            •••
+                        </button>
+
+                    </div>
+
+                    <div class="dashboard-greeting">
+
+                        <div>
+                            <p class="muted-label">
+                                YOUR FINANCIAL SNAPSHOT
+                            </p>
+
+                            <h2>A clearer picture.</h2>
+                        </div>
+
+                        <div class="avatar">P</div>
+
+                    </div>
+
+                    <div class="balance-panel">
+
+                        <div class="balance-panel-top">
+                            <span>Monthly income</span>
+
+                            <span class="balance-tag">
+                                <span class="tiny-dot"></span>
+                                Example
+                            </span>
+                        </div>
+
+                        <p class="balance-value">₹30,000</p>
+
+                        <div class="balance-panel-bottom">
+                            <span>Planned monthly income</span>
+                            <span class="balance-symbol">₹</span>
+                        </div>
+
+                    </div>
+
+                    <div class="metric-grid">
+
+                        <article class="metric-card">
+
+                            <div class="metric-heading">
+                                <span class="metric-icon spend-icon">↘</span>
+                                <span>Spent today</span>
+                            </div>
+
+                            <p class="metric-value">₹640</p>
+
+                            <p class="metric-caption">
+                                <span class="caption-dot coral"></span>
+                                Daily spending
+                            </p>
+
+                        </article>
+
+                        <article class="metric-card">
+
+                            <div class="metric-heading">
+                                <span class="metric-icon save-icon">✳</span>
+                                <span>Budget left</span>
+                            </div>
+
+                            <p class="metric-value">₹360</p>
+
+                            <p class="metric-caption">
+                                <span class="caption-dot green"></span>
+                                Of ₹1,000 daily budget
+                            </p>
+
+                        </article>
+
+                    </div>
+
+                    <div class="chart-panel">
+
+                        <div class="chart-title-row">
+
+                            <div>
+                                <p class="chart-title">
+                                    Your spending rhythm
+                                </p>
+
+                                <p class="chart-subtitle">
+                                    A sample week at a glance
+                                </p>
+                            </div>
+
+                            <span class="chart-period">7 days⌄</span>
+
+                        </div>
+
+                        <div class="chart">
+
+                            <div class="chart-item">
+                                <span class="bar" style="--bar-height:38%"></span>
+                                <small>Mon</small>
+                            </div>
+
+                            <div class="chart-item">
+                                <span class="bar" style="--bar-height:62%"></span>
+                                <small>Tue</small>
+                            </div>
+
+                            <div class="chart-item">
+                                <span class="bar" style="--bar-height:48%"></span>
+                                <small>Wed</small>
+                            </div>
+
+                            <div class="chart-item">
+                                <span class="bar bar-highlight" style="--bar-height:83%"></span>
+                                <small>Thu</small>
+                            </div>
+
+                            <div class="chart-item">
+                                <span class="bar" style="--bar-height:57%"></span>
+                                <small>Fri</small>
+                            </div>
+
+                            <div class="chart-item">
+                                <span class="bar" style="--bar-height:32%"></span>
+                                <small>Sat</small>
+                            </div>
+
+                            <div class="chart-item">
+                                <span class="bar" style="--bar-height:23%"></span>
+                                <small>Sun</small>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="floating-note note-spending">
+                    <span class="floating-note-icon icon-mint">↗</span>
+
+                    <span>
+                        <small>Mindful money</small>
+                        <strong>Spend with purpose</strong>
+                    </span>
+                </div>
+
+                <div class="floating-note note-progress">
+                    <span class="floating-note-icon icon-cream">✳</span>
+
+                    <span>
+                        <small>One day at a time</small>
+                        <strong>Progress, not pressure</strong>
+                    </span>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- PRINCIPLES -->
+        <section class="stats-strip section-shell">
+
+            <div class="strip-item">
+                <span class="strip-icon">01</span>
+                <span>
+                    <strong>Know your spending</strong>
+                    <small>See where your money goes.</small>
+                </span>
+            </div>
+
+            <div class="strip-divider"></div>
+
+            <div class="strip-item">
+                <span class="strip-icon">02</span>
+                <span>
+                    <strong>Build a daily habit</strong>
+                    <small>Small entries, better awareness.</small>
+                </span>
+            </div>
+
+            <div class="strip-divider"></div>
+
+            <div class="strip-item">
+                <span class="strip-icon">03</span>
+                <span>
+                    <strong>Plan with confidence</strong>
+                    <small>Make room for your priorities.</small>
+                </span>
+            </div>
+
+        </section>
+
+        <!-- FEATURES -->
+        <section class="features-section section-shell" id="features">
+
+            <div class="section-intro">
+
+                <span class="section-kicker">
+                    LESS GUESSING. MORE CLARITY.
+                </span>
+
+                <h2>
+                    A healthier relationship<br>
+                    with your money.
+                </h2>
+
+                <p>
+                    Useful tools for the everyday decisions
+                    that add up over time.
+                </p>
+
+            </div>
+
+            <div class="features-grid">
+
+                <article class="feature-card feature-card-green">
+
+                    <div class="feature-top">
+                        <span class="feature-icon">↗</span>
+                        <span class="feature-number">01 / TRACK</span>
+                    </div>
+
+                    <h3>Daily expense tracking</h3>
+
+                    <p>
+                        Log the little things as they happen and see
+                        your daily spending in one simple view.
+                    </p>
+
+                    <a href="#dashboard-preview" class="feature-link">
+                        Explore tracking <span>↗</span>
+                    </a>
+
+                    <div class="feature-decoration decoration-lines"></div>
+
+                </article>
+
+                <article class="feature-card feature-card-cream" id="how-it-works">
+
+                    <div class="feature-top">
+                        <span class="feature-icon">◷</span>
+                        <span class="feature-number">02 / REFLECT</span>
+                    </div>
+
+                    <h3>Your spending history</h3>
+
+                    <p>
+                        Return to a date, review what you spent,
+                        and understand your habits without guesswork.
+                    </p>
+
+                    <a href="#dashboard-preview" class="feature-link">
+                        See your history <span>↗</span>
+                    </a>
+
+                    <div class="feature-decoration decoration-rings"></div>
+
+                </article>
+
+                <article class="feature-card feature-card-dark">
+
+                    <div class="feature-top">
+                        <span class="feature-icon">✳</span>
+                        <span class="feature-number">03 / PLAN</span>
+                    </div>
+
+                    <h3>A clearer daily budget</h3>
+
+                    <p>
+                        Compare spending with your budget and get
+                        a better sense of what you may be able to save.
+                    </p>
+
+                    <a href="#dashboard-preview" class="feature-link">
+                        Plan ahead <span>↗</span>
+                    </a>
+
+                    <div class="feature-decoration decoration-orb"></div>
+
+                </article>
+
+            </div>
+
+        </section>
+
+        <!-- ======================================
+             FINANCIAL CALENDAR CARD
+        ======================================= -->
+
+        <section class="pf-calendar-section section-shell"
+                 id="financial-calendar">
+
+            <div class="pf-calendar-intro">
+
+                <span class="pf-calendar-kicker">
+                    YOUR MONEY, YOUR TIMELINE
+                </span>
+
+                <h2>
+                    Every day has a<br>
+                    <span style="color:#21865b;">financial story.</span>
+                </h2>
+
+                <p>
+                    Take a closer look at your spending habits.
+                    Pick a date, review your expenses, and make
+                    more informed decisions about your money.
+                </p>
+
+            </div>
+
+            <a href="{{ url_for('calendar') }}"
+               class="pf-calendar-link"
+               aria-label="Open PaisaFlow Financial Calendar">
+
+                <div class="pf-calendar-card">
+
+                    <!-- LEFT: CALENDAR ILLUSTRATION -->
+
+                    <div class="pf-calendar-visual">
+
+                        <div class="pf-calendar-sheet">
+
+                            <div class="pf-calendar-sheet-header">
+
+                                <div>
+                                    <div class="pf-calendar-sheet-title">
+                                        Your Calendar
+                                    </div>
+
+                                    <div class="pf-calendar-sheet-subtitle">
+                                        Every rupee has a place
+                                    </div>
+                                </div>
+
+                                <div class="pf-calendar-header-icon">
+                                    ▦
+                                </div>
+
+                            </div>
+
+                            <div class="pf-calendar-weekdays">
+                                <span>Su</span>
+                                <span>Mo</span>
+                                <span>Tu</span>
+                                <span>We</span>
+                                <span>Th</span>
+                                <span>Fr</span>
+                                <span>Sa</span>
+                            </div>
+
+                            <div class="pf-calendar-dates">
+                                <span class="pf-date-muted">27</span>
+                                <span class="pf-date-muted">28</span>
+                                <span class="pf-date-muted">29</span>
+                                <span class="pf-date-muted">30</span>
+                                <span>1</span>
+                                <span>2</span>
+                                <span>3</span>
+
+                                <span>4</span>
+                                <span>5</span>
+                                <span>6</span>
+                                <span class="pf-date-marked">7</span>
+                                <span>8</span>
+                                <span>9</span>
+                                <span>10</span>
+
+                                <span>11</span>
+                                <span>12</span>
+                                <span class="pf-date-marked">13</span>
+                                <span>14</span>
+                                <span>15</span>
+                                <span>16</span>
+                                <span>17</span>
+
+                                <span>18</span>
+                                <span>19</span>
+                                <span>20</span>
+                                <span class="pf-date-marked">21</span>
+                                <span>22</span>
+                                <span>23</span>
+                                <span>24</span>
+
+                                <span>25</span>
+                                <span>26</span>
+                                <span>27</span>
+                                <span>28</span>
+                                <span>29</span>
+                                <span>30</span>
+                                <span class="pf-date-active">31</span>
+                            </div>
+
+                            <div class="pf-calendar-legend">
+                                <span>
+                                    <i class="pf-legend-dot"></i>
+                                    Selected day
+                                </span>
+
+                                <span>
+                                    <i class="pf-legend-dot pf-legend-light"></i>
+                                    Activity
+                                </span>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- RIGHT: CARD TEXT -->
+
+                    <div class="pf-calendar-content">
+
+                        <span class="pf-calendar-badge">
+                            <span class="pf-calendar-badge-dot"></span>
+                            YOUR FINANCE COMPANION
+                        </span>
+
+                        <h3>
+                            Meet your<br>
+                            <span>Financial Calendar.</span>
+                        </h3>
+
+                        <p class="pf-calendar-description">
+                            Your financial life doesn't happen all at once.
+                            It unfolds day by day. Use your calendar to
+                            revisit dates, understand your spending,
+                            and stay connected with your money habits.
+                        </p>
+
+                        <div class="pf-calendar-benefits">
+
+                            <div class="pf-calendar-benefit">
+                                <span class="pf-calendar-check">✓</span>
+                                Review expenses by date
+                            </div>
+
+                            <div class="pf-calendar-benefit">
+                                <span class="pf-calendar-check">✓</span>
+                                Understand your spending history
+                            </div>
+
+                            <div class="pf-calendar-benefit">
+                                <span class="pf-calendar-check">✓</span>
+                                Build more mindful money habits
+                            </div>
+
+                        </div>
+
+                        <span class="pf-calendar-action">
+                            Explore Financial Calendar
+                            <span>→</span>
+                        </span>
+
+                        <p class="pf-calendar-note">
+                            One date at a time. One step closer to clarity.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </a>
+
+        </section>
+
+        <!-- ABOUT -->
+        <section class="closing-section section-shell" id="about">
+
+            <div class="closing-mark">p.</div>
+
+            <span class="section-kicker">
+                MONEY SHOULD FEEL MANAGEABLE
+            </span>
+
+            <h2>
+                It’s not about cutting out<br>
+                <em>everything you love.</em>
+            </h2>
+
+            <p>
+                It’s about understanding your money well enough
+                to spend on what matters to you.
+            </p>
+
+            <a class="button button-primary" href="#home">
+                Let’s make it clearer <span>↑</span>
+            </a>
+
+            <div class="closing-sparkle sparkle-a">✳</div>
+            <div class="closing-sparkle sparkle-b">✦</div>
+
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="site-footer section-shell">
+
+        <a class="brand footer-brand" href="#home">
+            <span class="brand-mark">p<span>.</span></span>
+            <span class="brand-name">PaisaFlow</span>
+        </a>
+
+        <p>Built for better money habits.</p>
+
+        <span class="footer-note">
+            Personal finance, with intention <span>✳</span>
+        </span>
+
+    </footer>
+
+</body>
+
+</html>
+```

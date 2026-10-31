@@ -1,0 +1,864 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PaisaFlow | Investment Hub</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --green: #15803d;
+            --light-green: #dcfce7;
+            --background: #f5f8f6;
+            --white: #ffffff;
+            --text: #172b23;
+            --muted: #718078;
+            --border: #e4ebe6;
+            --blue: #2563eb;
+            --orange: #ea580c;
+            --purple: #7c3aed;
+            --red: #dc2626;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+           
+            color: var(--text);
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 240px;
+            flex-shrink: 0;
+            background: white;
+            border-right: 1px solid var(--border);
+            padding: 28px 18px;
+        }
+
+        .brand {
+            font-size: 25px;
+            font-weight: 800;
+            color: var(--green);
+            margin: 0 10px 35px;
+        }
+
+        .brand span {
+            color: var(--text);
+        }
+
+        .nav-title {
+            font-size: 11px;
+            color: var(--muted);
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin: 22px 10px 12px;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 13px;
+            margin-bottom: 7px;
+            border-radius: 10px;
+            color: #58675e;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: var(--light-green);
+            color: var(--green);
+        }
+
+        .main {
+            flex: 1;
+            min-width: 0;
+            padding: 30px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            flex-wrap: wrap;
+            margin-bottom: 28px;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .user-badge {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .card,
+        .budget-card,
+        .chart-card,
+        .table-card,
+        .tip {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 22px;
+            min-width: 0;
+            box-shadow: 0 4px 15px rgba(25, 60, 40, 0.025);
+        }
+
+        .stat-label {
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 14px;
+        }
+
+        .stat-value {
+            font-size: 26px;
+            font-weight: 800;
+            overflow-wrap: anywhere;
+        }
+
+        .stat-note {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 10px;
+            line-height: 1.7;
+        }
+
+        .green { color: var(--green); }
+        .blue { color: var(--blue); }
+        .orange { color: var(--orange); }
+        .purple { color: var(--purple); }
+        .red { color: var(--red); }
+
+        .section-heading {
+            margin: 30px 0 16px;
+        }
+
+        .section-heading h2 {
+            font-size: 21px;
+            margin-bottom: 7px;
+        }
+
+        .section-heading p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .notice {
+            padding: 16px 19px;
+            border-radius: 12px;
+            margin-bottom: 22px;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .warning {
+            color: #9a3412;
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+        }
+
+        .success {
+            color: #166534;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+        }
+
+        .budget-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .budget-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .budget-top h3 {
+            font-size: 16px;
+        }
+
+        .percentage {
+            background: var(--light-green);
+            color: var(--green);
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .budget-amount {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            overflow-wrap: anywhere;
+        }
+
+        .budget-description {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .chart-card h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .chart-card > p {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 280px;
+        }
+
+        .table-card {
+            overflow: hidden;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            min-width: 500px;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 15px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+
+        th {
+            background: #f9fbf9;
+            color: var(--muted);
+            font-weight: 700;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            background: #f0fdf4;
+            color: #166534;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 35px 15px;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .tip h3 {
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .tip p {
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.8;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 30px 10px 10px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        @media (max-width: 1000px) {
+            .sidebar {
+                width: 205px;
+            }
+
+            .main {
+                padding: 22px;
+            }
+
+            .grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 760px) {
+            .layout {
+                display: block;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 16px;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .brand {
+                margin-bottom: 16px;
+            }
+
+            .nav-title {
+                display: none;
+            }
+
+            .nav-link {
+                display: inline-block;
+                padding: 10px;
+                margin: 3px 2px;
+                font-size: 12px;
+            }
+
+            .main {
+                padding: 17px;
+            }
+
+            h1 {
+                font-size: 23px;
+            }
+
+            .grid,
+            .budget-grid,
+            .charts-grid,
+            .tips-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-value {
+                font-size: 23px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="layout">
+
+    <aside class="sidebar">
+        <div class="brand">Paisa<span>Flow</span></div>
+
+        <div class="nav-title">MAIN MENU</div>
+
+        <a class="nav-link" href="{{ url_for('dashboard') }}">
+            Dashboard
+        </a>
+
+        <a class="nav-link active" href="{{ url_for('investment') }}">
+            Investment Hub
+        </a>
+
+        <a class="nav-link" href="{{ url_for('profile') }}">
+            My Profile
+        </a>
+
+        <div class="nav-title">ACCOUNT</div>
+
+        <a class="nav-link" href="{{ url_for('logout') }}">
+            Logout
+        </a>
+    </aside>
+
+    <main class="main">
+
+        <header class="topbar">
+            <div>
+                <h1>Smart Investment Hub</h1>
+                <p class="subtitle">
+                    Hello {{ name | e }}! Manage your income, expenses and savings.
+                </p>
+            </div>
+
+            <div class="user-badge">PaisaFlow Finance</div>
+        </header>
+
+        {% if income <= 0 %}
+        <div class="notice warning">
+            <strong>Monthly income is not set!</strong><br>
+            Set your monthly income from your dashboard to generate your
+            personalized 50/30/20 budget plan.
+        </div>
+        {% elif remaining_balance < 0 %}
+        <div class="notice warning">
+            <strong>Expenses are higher than income.</strong><br>
+            Your recorded expenses exceed your income by
+            ₹{{ "{:,.2f}".format(-remaining_balance) }}.
+            Review your spending and adjust your budget.
+        </div>
+        {% else %}
+        <div class="notice success">
+            <strong>Your financial overview is ready.</strong><br>
+            Review your spending and use the suggested budget allocations
+            to plan your finances.
+        </div>
+        {% endif %}
+
+        <section class="grid">
+
+            <div class="card">
+                <div class="stat-label">Monthly Income</div>
+                <div class="stat-value green">
+                    ₹{{ "{:,.2f}".format(income) }}
+                </div>
+                <div class="stat-note">
+                    Monthly income recorded in your account.
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="stat-label">Expenses This Month</div>
+                <div class="stat-value orange">
+                    ₹{{ "{:,.2f}".format(total_expenses) }}
+                </div>
+                <div class="stat-note">
+                    Expenses recorded during the current month.
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="stat-label">Remaining Balance</div>
+                <div class="stat-value {% if remaining_balance < 0 %}red{% else %}blue{% endif %}">
+                    ₹{{ "{:,.2f}".format(remaining_balance) }}
+                </div>
+                <div class="stat-note">
+                    Monthly income minus current-month expenses.
+                </div>
+            </div>
+
+        </section>
+
+        <div class="section-heading">
+            <h2>Smart Budget Generator</h2>
+            <p>
+                Suggested allocation using the 50/30/20 budgeting method.
+                Adjust it according to your actual needs.
+            </p>
+        </div>
+
+        <section class="budget-grid">
+
+            <div class="budget-card">
+                <div class="budget-top">
+                    <h3>Needs</h3>
+                    <span class="percentage">50%</span>
+                </div>
+                <div class="budget-amount blue">
+                    ₹{{ "{:,.2f}".format(income * 0.50) }}
+                </div>
+                <p class="budget-description">
+                    Suggested amount for essential expenses such as food,
+                    rent, utilities and necessary travel.
+                </p>
+            </div>
+
+            <div class="budget-card">
+                <div class="budget-top">
+                    <h3>Wants</h3>
+                    <span class="percentage">30%</span>
+                </div>
+                <div class="budget-amount orange">
+                    ₹{{ "{:,.2f}".format(income * 0.30) }}
+                </div>
+                <p class="budget-description">
+                    Suggested amount for shopping, entertainment,
+                    eating out and other non-essential spending.
+                </p>
+            </div>
+
+            <div class="budget-card">
+                <div class="budget-top">
+                    <h3>Savings</h3>
+                    <span class="percentage">20%</span>
+                </div>
+                <div class="budget-amount green">
+                    ₹{{ "{:,.2f}".format(income * 0.20) }}
+                </div>
+                <p class="budget-description">
+                    Suggested savings target for emergency funds,
+                    future goals and investment planning.
+                </p>
+            </div>
+
+        </section>
+
+        <div class="section-heading">
+            <h2>Financial Analytics</h2>
+            <p>Understand your monthly income and spending patterns.</p>
+        </div>
+
+        <section class="charts-grid">
+
+            <div class="chart-card">
+                <h3>Income vs Expenses</h3>
+                <p>Compare your income with your current-month expenses.</p>
+
+                <div class="chart-container">
+                    <canvas id="incomeExpenseChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h3>Expense Categories</h3>
+                <p>View the distribution of your current-month spending.</p>
+
+                <div class="chart-container">
+                    <canvas id="categoryChart"></canvas>
+                    <p id="emptyCategoryMessage"
+                       class="empty-state"
+                       hidden>
+                        No expenses recorded for this month yet.
+                    </p>
+                </div>
+            </div>
+
+        </section>
+
+        <div class="section-heading">
+            <h2>Recent Expenses</h2>
+            <p>Your five most recently recorded expenses.</p>
+        </div>
+
+        <section class="table-card">
+
+            {% if recent_expenses %}
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Expense</th>
+                            <th>Category</th>
+                            <th>Date</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for expense in recent_expenses %}
+                        <tr>
+                            <td>{{ expense["title"] | e }}</td>
+                            <td>
+                                <span class="category-badge">
+                                    {{ expense["category"] | e }}
+                                </span>
+                            </td>
+                            <td>{{ expense["expense_date"] | e }}</td>
+                            <td>
+                                ₹{{ "{:,.2f}".format(expense["amount"]) }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <strong>No expenses recorded yet.</strong><br>
+                Add an expense from your dashboard to see it here.
+            </div>
+            {% endif %}
+
+        </section>
+
+        <div class="section-heading">
+            <h2>Smart Money Tips</h2>
+            <p>Simple ideas for managing your finances.</p>
+        </div>
+
+        <section class="tips-grid">
+
+            <div class="tip">
+                <h3 class="green">Emergency Fund</h3>
+                <p>
+                    Gradually build a reserve for unexpected expenses.
+                    Start with a realistic amount you can save regularly.
+                </p>
+            </div>
+
+            <div class="tip">
+                <h3 class="blue">Review Spending</h3>
+                <p>
+                    Check your expense categories regularly to find
+                    unnecessary spending and improve your budget.
+                </p>
+            </div>
+
+            <div class="tip">
+                <h3 class="purple">Plan Before Investing</h3>
+                <p>
+                    Consider your goals, time horizon and risk tolerance.
+                    Investment values can fall, and returns are not guaranteed.
+                </p>
+            </div>
+
+        </section>
+
+        <footer class="footer">
+            <p>PaisaFlow Smart Investment Hub</p>
+            <p>
+                Budget figures are planning estimates, not personalized
+                investment advice.
+            </p>
+        </footer>
+
+    </main>
+</div>
+
+<!-- Flask data is passed separately from JavaScript -->
+<script id="investment-data" type="application/json">
+{{ {
+    "income": income | default(0, true),
+    "total_expenses": total_expenses | default(0, true),
+    "categories": category_expenses | default([], true)
+} | tojson }}
+</script>
+
+<script>
+"use strict";
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const dataElement = document.getElementById("investment-data");
+
+    if (!dataElement) {
+        console.error("Investment data element was not found.");
+        return;
+    }
+
+    let financeData;
+
+    try {
+        financeData = JSON.parse(dataElement.textContent);
+    } catch (error) {
+        console.error("Unable to read investment data:", error);
+        return;
+    }
+
+    const incomeAmount = Number(financeData.income || 0);
+    const expenseAmount = Number(financeData.total_expenses || 0);
+
+    const categories = Array.isArray(financeData.categories)
+        ? financeData.categories
+        : [];
+
+    const money = function (value) {
+        return "₹" + Number(value || 0).toLocaleString("en-IN", {
+            maximumFractionDigits: 2
+        });
+    };
+
+    if (typeof Chart === "undefined") {
+        console.error("Chart.js did not load.");
+        return;
+    }
+
+    // Income vs expenses
+    const incomeCanvas = document.getElementById("incomeExpenseChart");
+
+    if (incomeCanvas) {
+        new Chart(incomeCanvas, {
+            type: "bar",
+
+            data: {
+                labels: ["This Month"],
+
+                datasets: [
+                    {
+                        label: "Income",
+                        data: [incomeAmount],
+                        backgroundColor: "#16a34a",
+                        borderRadius: 8
+                    },
+                    {
+                        label: "Expenses",
+                        data: [expenseAmount],
+                        backgroundColor: "#f97316",
+                        borderRadius: 8
+                    }
+                ]
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+
+                scales: {
+                    y: {
+                        beginAtZero: true,
+
+                        ticks: {
+                            callback: function (value) {
+                                return money(value);
+                            }
+                        }
+                    }
+                },
+
+                plugins: {
+                    legend: {
+                        position: "bottom"
+                    },
+
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                return context.dataset.label + ": " +
+                                    money(context.raw);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Category-wise expenses
+    const categoryCanvas = document.getElementById("categoryChart");
+    const emptyMessage = document.getElementById("emptyCategoryMessage");
+
+    const categoryLabels = categories.map(function (item) {
+        return String(item.category || "Other");
+    });
+
+    const categoryValues = categories.map(function (item) {
+        return Number(item.total || 0);
+    });
+
+    if (categoryLabels.length > 0 && categoryCanvas) {
+        new Chart(categoryCanvas, {
+            type: "doughnut",
+
+            data: {
+                labels: categoryLabels,
+
+                datasets: [
+                    {
+                        data: categoryValues,
+
+                        backgroundColor: [
+                            "#16a34a",
+                            "#2563eb",
+                            "#f97316",
+                            "#7c3aed",
+                            "#db2777",
+                            "#0891b2",
+                            "#ca8a04",
+                            "#64748b"
+                        ],
+
+                        borderColor: "#ffffff",
+                        borderWidth: 2
+                    }
+                ]
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+
+                plugins: {
+                    legend: {
+                        position: "bottom"
+                    },
+
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                return context.label + ": " +
+                                    money(context.raw);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    } else {
+        if (categoryCanvas) {
+            categoryCanvas.hidden = true;
+        }
+
+        if (emptyMessage) {
+            emptyMessage.hidden = false;
+        }
+    }
+
+});
+</script>
+
+</body>
+</html>
+```

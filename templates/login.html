@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#103b2e">
+
+    ```
+    <title>Login | PaisaFlow</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --green: #176b4b;
+            --dark-green: #103b2e;
+            --mint: #b8f3ce;
+            --text: #183b2e;
+            --muted: #77867c;
+            --white: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: "DM Sans", sans-serif;
+            background: #f5f7f2;
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .login-page {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        /* LEFT SIDE */
+
+        .brand-panel {
+            position: relative;
+            isolation: isolate;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 45px 8%;
+            color: white;
+            background: linear-gradient(135deg,
+                    #103b2e,
+                    #176b4b,
+                    #205a43,
+                    #103b2e);
+            background-size: 250% 250%;
+            animation: gradientMove 12s ease infinite;
+        }
+
+        .brand-panel::before,
+        .brand-panel::after {
+            content: "";
+            position: absolute;
+            z-index: -1;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .brand-panel::before {
+            width: 420px;
+            height: 420px;
+            right: -160px;
+            top: 12%;
+            background: rgba(184, 243, 206, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.13);
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .brand-panel::after {
+            width: 300px;
+            height: 300px;
+            left: -130px;
+            bottom: 5%;
+            background: rgba(184, 243, 206, 0.09);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            animation: float 10s ease-in-out infinite reverse;
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            width: fit-content;
+            font-family: "Manrope", sans-serif;
+            font-size: 23px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .brand-icon {
+            display: grid;
+            place-items: center;
+            width: 45px;
+            height: 45px;
+            border-radius: 15px;
+            color: var(--dark-green);
+            background: var(--mint);
+            font-size: 27px;
+            transform: rotate(-5deg);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .brand-icon span {
+            transform: rotate(5deg);
+        }
+
+        .brand-content {
+            max-width: 510px;
+            margin: 70px 0;
+            animation: slideUp .8s ease both;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            padding: 9px 14px;
+            margin-bottom: 26px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #d8f7e1;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.4px;
+        }
+
+        .eyebrow-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #a7f3c3;
+            box-shadow: 0 0 12px #a7f3c3;
+            animation: pulse 2s infinite;
+        }
+
+        .brand-content h2 {
+            max-width: 490px;
+            font-family: "Manrope", sans-serif;
+            font-size: clamp(36px, 4.2vw, 61px);
+            line-height: 1.13;
+            letter-spacing: -2.5px;
+            font-weight: 800;
+        }
+
+        .brand-content h2 span {
+            color: var(--mint);
+        }
+
+        .brand-content p {
+            max-width: 410px;
+            margin-top: 23px;
+            color: rgba(255, 255, 255, 0.76);
+            font-size: 16px;
+            line-height: 1.9;
+        }
+
+        .mini-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-top: 37px;
+        }
+
+        .mini-stat {
+            padding: 14px 17px;
+            min-width: 145px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(10px);
+            transition: transform .3s, background .3s;
+        }
+
+        .mini-stat:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.13);
+        }
+
+        .mini-stat strong {
+            display: block;
+            font-size: 17px;
+        }
+
+        .mini-stat span {
+            color: rgba(255, 255, 255, 0.68);
+            font-size: 11px;
+        }
+
+        .brand-footer {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 12px;
+        }
+
+        /* RIGHT SIDE */
+
+        .form-panel {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 45px 8%;
+            position: relative;
+        }
+
+        .form-panel::before {
+            content: "";
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            top: 8%;
+            right: 0;
+            background: #d9efdd;
+            filter: blur(90px);
+            opacity: .7;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 430px;
+            position: relative;
+            z-index: 1;
+            padding: 42px;
+            background: rgba(255, 255, 255, 0.88);
+            border: 1px solid rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            box-shadow: 0 25px 80px rgba(24, 59, 46, 0.09);
+            backdrop-filter: blur(18px);
+            animation: cardAppear .8s cubic-bezier(.2, .8, .2, 1) both;
+        }
+
+        .mobile-brand {
+            display: none;
+        }
+
+        .welcome-label {
+            display: inline-block;
+            padding: 7px 12px;
+            border-radius: 30px;
+            color: var(--green);
+            background: #e8f6eb;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .login-card h1 {
+            margin-top: 19px;
+            font-family: "Manrope", sans-serif;
+            font-size: clamp(30px, 3vw, 38px);
+            line-height: 1.25;
+            letter-spacing: -1.5px;
+        }
+
+        .subtitle {
+            margin-top: 10px;
+            margin-bottom: 29px;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .auth-message {
+            margin-bottom: 18px;
+            padding: 12px 14px;
+            border: 1px solid #f1caca;
+            border-radius: 11px;
+            background: #fff1f1;
+            color: #a52d2d;
+            font-size: 13px;
+            animation: slideUp .35s ease both;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 17px;
+        }
+
+        .field-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #344a3e;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #83978a;
+            font-size: 17px;
+            pointer-events: none;
+        }
+
+        .auth-form input {
+            width: 100%;
+            min-height: 54px;
+            padding: 14px 15px 14px 45px;
+            border: 1px solid #e1e9e1;
+            border-radius: 12px;
+            outline: none;
+            background: #fbfcfa;
+            color: var(--text);
+            font: inherit;
+            font-size: 14px;
+            transition: border-color .25s, box-shadow .25s,
+                background .25s, transform .25s;
+        }
+
+        .auth-form input::placeholder {
+            color: #a2ada5;
+        }
+
+        .auth-form input:hover {
+            border-color: #b9d7c1;
+        }
+
+        .auth-form input:focus {
+            border-color: #27835b;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(39, 131, 91, 0.11);
+            transform: translateY(-1px);
+        }
+
+        .auth-submit {
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            min-height: 55px;
+            margin-top: 8px;
+            border: none;
+            border-radius: 12px;
+            color: white;
+            background: linear-gradient(110deg, #176b4b, #104b36);
+            box-shadow: 0 9px 22px rgba(23, 107, 75, 0.19);
+            font-family: "DM Sans", sans-serif;
+            font-size: 14px;
+            font-weight: 800;
+            transition: transform .25s, box-shadow .25s;
+        }
+
+        .auth-submit::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(110deg,
+                    transparent 25%,
+                    rgba(255, 255, 255, 0.2) 50%,
+                    transparent 75%);
+            transform: translateX(-120%);
+            transition: transform .65s;
+        }
+
+        .auth-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 28px rgba(23, 107, 75, 0.28);
+        }
+
+        .auth-submit:hover::before {
+            transform: translateX(120%);
+        }
+
+        .auth-submit:active {
+            transform: translateY(0) scale(.99);
+        }
+
+        .button-arrow {
+            font-size: 19px;
+            transition: transform .25s;
+        }
+
+        .auth-submit:hover .button-arrow {
+            transform: translateX(5px);
+        }
+
+        .auth-switch {
+            margin-top: 25px;
+            color: var(--muted);
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .auth-switch a {
+            color: var(--green);
+            font-weight: 800;
+            transition: color .2s;
+        }
+
+        .auth-switch a:hover {
+            color: #0c3e2b;
+            text-decoration: underline;
+        }
+
+        .auth-back {
+            display: block;
+            width: fit-content;
+            margin: 25px auto 0;
+            color: #7a897e;
+            font-size: 12px;
+            transition: color .2s, transform .2s;
+        }
+
+        .auth-back:hover {
+            color: var(--green);
+            transform: translateX(-3px);
+        }
+
+        /* ANIMATIONS */
+
+        @keyframes gradientMove {
+
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-22px) rotate(8deg);
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: .55;
+                transform: scale(.8);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes cardAppear {
+            from {
+                opacity: 0;
+                transform: translateY(22px) scale(.98);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .login-page {
+                grid-template-columns: .85fr 1.15fr;
+            }
+
+            .brand-panel {
+                padding: 35px 7%;
+            }
+
+            .form-panel {
+                padding: 35px 6%;
+            }
+
+            .login-card {
+                padding: 32px 27px;
+            }
+
+            .brand-content h2 {
+                font-size: 39px;
+            }
+        }
+
+        @media (max-width: 680px) {
+            .login-page {
+                display: block;
+                padding: 25px 18px 35px;
+                background:
+                    radial-gradient(circle at 0% 0%, #d8efdc, transparent 35%),
+                    #f5f7f2;
+            }
+
+            .brand-panel {
+                display: none;
+            }
+
+            .form-panel {
+                min-height: calc(100vh - 60px);
+                padding: 15px 0;
+            }
+
+            .form-panel::before {
+                width: 180px;
+                height: 180px;
+            }
+
+            .login-card {
+                max-width: 440px;
+                padding: 30px 23px;
+                border-radius: 22px;
+            }
+
+            .mobile-brand {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 28px;
+                font-family: "Manrope", sans-serif;
+                font-size: 21px;
+                font-weight: 800;
+            }
+
+            .mobile-brand-icon {
+                display: grid;
+                place-items: center;
+                width: 39px;
+                height: 39px;
+                border-radius: 12px;
+                background: var(--green);
+                color: white;
+            }
+
+            .login-card h1 {
+                font-size: 32px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                scroll-behavior: auto !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+    ```
+
+</head>
+
+<body>
+
+    ```
+    <main class="login-page">
+
+        <section class="brand-panel">
+            <a href="/" class="brand">
+                <span class="brand-icon"><span>p.</span></span>
+                <span>PaisaFlow</span>
+            </a>
+
+            <div class="brand-content">
+                <div class="eyebrow">
+                    <span class="eyebrow-dot"></span>
+                    YOUR MONEY, YOUR FUTURE
+                </div>
+
+                <h2>
+                    Make every rupee
+                    <span>move forward.</span>
+                </h2>
+
+                <p>
+                    Understand your spending, plan your budget, and
+                    build better financial habits — one small step at a time.
+                </p>
+
+                <div class="mini-stats">
+                    <div class="mini-stat">
+                        <strong>Track</strong>
+                        <span>Everyday expenses</span>
+                    </div>
+
+                    <div class="mini-stat">
+                        <strong>Plan</strong>
+                        <span>Your monthly budget</span>
+                    </div>
+
+                    <div class="mini-stat">
+                        <strong>Grow</strong>
+                        <span>Better money habits</span>
+                    </div>
+                </div>
+            </div>
+
+            <p class="brand-footer">
+                © 2026 PaisaFlow · A clearer way to manage money.
+            </p>
+        </section>
+
+        <section class="form-panel">
+            <div class="login-card">
+
+                <a href="/" class="mobile-brand">
+                    <span class="mobile-brand-icon">p.</span>
+                    <span>PaisaFlow</span>
+                </a>
+
+                <span class="welcome-label">Welcome back</span>
+
+                <h1>Let's get you in.</h1>
+
+                <p class="subtitle">
+                    Log in to see your money, your progress and your plans.
+                </p>
+
+                {% with messages = get_flashed_messages() %}
+                {% for message in messages %}
+                <div class="auth-message">{{ message }}</div>
+                {% endfor %}
+                {% endwith %}
+
+                
+                <form class="auth-form" method="POST"
+                    action="{{ url_for('login', next=request.args.get('next', '')) }}">
+                    
+
+
+                    <div>
+                        <label class="field-label" for="email">
+                            Email address
+                        </label>
+
+                        <div class="input-wrap">
+                            <span class="input-icon" aria-hidden="true">✉</span>
+                            <input id="email" name="email" type="email" placeholder="you@example.com"
+                                autocomplete="email" required>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="field-label" for="password">
+                            Password
+                        </label>
+
+                        <div class="input-wrap">
+                            <span class="input-icon" aria-hidden="true">⌑</span>
+                            <input id="password" name="password" type="password" placeholder="Enter your password"
+                                autocomplete="current-password" required>
+                        </div>
+                    </div>
+
+                    <button class="auth-submit" type="submit">
+                        <span>Log In to PaisaFlow</span>
+                        <span class="button-arrow" aria-hidden="true">→</span>
+                    </button>
+
+                </form>
+
+                <p class="auth-switch">
+                    New to PaisaFlow?
+                    <a href="/register">Create an account</a>
+                </p>
+
+                <a class="auth-back" href="/">
+                    ← Back to home
+                </a>
+
+            </div>
+        </section>
+
+    </main>
+    ```
+
+</body>
+
+</html>

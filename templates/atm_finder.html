@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PaisaFlow | Nearby ATMs</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+    <style>
+        :root {
+            --green: #176b4b;
+            --dark: #103f30;
+            --cream: #f5f7f2;
+            --text: #183b2d;
+            --muted: #74847a;
+            --border: #e4ebe3;
+            --shadow: 0 12px 35px rgba(16, 63, 48, .06)
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            padding: 26px 5%;
+            min-height: 100vh;
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            background: var(--cream)
+        }
+
+        .wrap {
+            max-width: 1000px;
+            margin: auto
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            background: #fff;
+            padding: 17px 22px;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: var(--shadow)
+        }
+
+        .logo {
+            font-size: 27px;
+            font-weight: 800;
+            color: var(--green);
+            text-decoration: none
+        }
+
+        .logo span {
+            color: #72bd8f
+        }
+
+        .navlinks {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap
+        }
+
+        .navlinks a {
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            text-decoration: none;
+            color: var(--green);
+            font-weight: 600
+        }
+
+        header {
+            margin: 30px 0 20px
+        }
+
+        header h1 {
+            margin: 0 0 8px;
+            font-size: clamp(28px, 4vw, 38px)
+        }
+
+        header p {
+            color: var(--muted);
+            margin: 0;
+            line-height: 1.7
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: var(--shadow)
+        }
+
+        .btn {
+            border: 0;
+            border-radius: 11px;
+            background: var(--green);
+            color: #fff;
+            padding: 13px 18px;
+            font: inherit;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px
+        }
+
+        .btn.secondary {
+            background: #fff;
+            color: var(--green);
+            border: 1px solid var(--border)
+        }
+
+        .btn:disabled {
+            opacity: .6;
+            cursor: wait
+        }
+
+        .status {
+            padding: 14px 16px;
+            border-radius: 12px;
+            background: #f8fbf8;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            margin: 18px 0;
+            line-height: 1.55
+        }
+
+        .status.error {
+            color: #9b2828;
+            background: #fff5f5;
+            border-color: #f2d2d2
+        }
+
+        #map {
+            height: 380px;
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            margin: 18px 0;
+            z-index: 1
+        }
+
+        .results {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+            margin-top: 20px
+        }
+
+        .atm-card {
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            background: linear-gradient(145deg, #fff, #fbfdfb)
+        }
+
+        .atm-top {
+            display: flex;
+            align-items: flex-start;
+            gap: 13px
+        }
+
+        .icon {
+            width: 48px;
+            height: 48px;
+            display: grid;
+            place-items: center;
+            border-radius: 14px;
+            background: #eaf5ed;
+            font-size: 24px;
+            flex-shrink: 0
+        }
+
+        .atm-card h2 {
+            font-size: 18px;
+            margin: 2px 0 6px
+        }
+
+        .atm-card p {
+            font-size: 14px;
+            line-height: 1.65;
+            color: var(--muted);
+            margin: 12px 0 16px
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap
+        }
+
+        .note {
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.6;
+            margin: 20px 0 0
+        }
+
+        @media(max-width:600px) {
+            body {
+                padding: 14px 4%
+            }
+
+            .panel {
+                padding: 18px
+            }
+
+            .nav {
+                padding: 15px
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <nav class="nav"><a class="logo" href="{{ url_for('dashboard') }}">Paisa<span>Flow</span></a>
+            <div class="navlinks"><a href="{{ url_for('dashboard') }}">← Dashboard</a><a
+                    href="{{ url_for('calculators') }}">Calculators</a><a href="{{ url_for('logout') }}">Logout</a>
+            </div>
+        </nav>
+        <header>
+            <h1>🏧 Find Nearby ATMs</h1>
+            <p>See ATM cards on this page when map data is available, and keep Google Maps as a backup for complete
+                nearby search and directions.</p>
+        </header>
+        <section class="panel">
+            <div class="atm-card">
+                <div class="atm-top">
+                    <div class="icon">📍</div>
+                    <div>
+                        <h2>ATMs near your location</h2>
+                        <p style="margin:4px 0 0">We’ll try to load ATM cards on this page. Google Maps remains
+                            available as a backup. Your location is not saved by PaisaFlow.</p>
+                    </div>
+                </div>
+                <div class="actions" style="margin-top:20px"><button class="btn" id="findBtn" type="button">📍 Find
+                        Nearby ATMs</button><a class="btn secondary" id="manualLink"
+                        href="https://www.google.com/maps/search/ATM/" target="_blank" rel="noopener">Search without
+                        location ↗</a></div>
+            </div>
+            <div id="status" class="status" role="status" aria-live="polite">Click “Find Nearby ATMs” and allow location
+                access when your browser asks.</div>
+            <div id="map" aria-label="Map showing your location and nearby ATMs"></div>
+            <div id="results" class="results" aria-live="polite"></div>
+            <p class="note">ATM cards on this page use OpenStreetMap data and may be incomplete. Use the Google Maps
+                card for another nearby search. Listings and operating hours can change; verify details before
+                travelling. Location access generally requires HTTPS or localhost.</p>
+        </section>
+    </div>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script>
+        const button = document.getElementById('findBtn'), statusEl = document.getElementById('status'), results = document.getElementById('results'), manualLink = document.getElementById('manualLink');
+        let map = null, userMarker = null, atmLayer = null;
+        function ensureMap(lat, lon) { if (!map) { map = L.map('map').setView([lat, lon], 15); L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap contributors' }).addTo(map); atmLayer = L.layerGroup().addTo(map); } else { map.setView([lat, lon], 15); atmLayer.clearLayers(); } if (userMarker) map.removeLayer(userMarker); userMarker = L.marker([lat, lon]).addTo(map).bindPopup('Your location').openPopup(); setTimeout(() => map.invalidateSize(), 100); }
+        function addAtmMarker(el, originLat, originLon) { const c = elementCoords(el), tags = el.tags || {}; if (!c || typeof c.lat !== 'number' || typeof c.lon !== 'number') return; const marker = L.marker([c.lat, c.lon]).addTo(atmLayer); marker.bindPopup(`<strong>${escapeHtml(atmName(tags))}</strong><br>${distanceLabel(distanceKm(originLat, originLon, c.lat, c.lon))}`); }
+        function distanceLabel(km) { return km < 1 ? `${Math.round(km * 1000)} m away` : `${km.toFixed(1)} km away` }
+        const OVERPASS_ENDPOINTS = [
+            'https://overpass-api.de/api/interpreter',
+            'https://overpass.kumi.systems/api/interpreter',
+            'https://overpass.private.coffee/api/interpreter'
+        ];
+        function setStatus(text, isError = false) { statusEl.textContent = text; statusEl.className = 'status' + (isError ? ' error' : '') }
+        function mapsSearchUrl(lat, lon) { return `https://www.google.com/maps/search/ATM/@${lat},${lon},15z` }
+        function directionsUrl(lat, lon) { return `https://www.google.com/maps/dir/?api=1&destination=ATM&origin=${lat},${lon}` }
+        function distanceKm(lat1, lon1, lat2, lon2) { const r = Math.PI / 180, dLat = (lat2 - lat1) * r, dLon = (lon2 - lon1) * r; const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * r) * Math.cos(lat2 * r) * Math.sin(dLon / 2) ** 2; return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)) }
+        function escapeHtml(v) { return String(v || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])) }
+        function elementCoords(el) { return el.type === 'node' ? { lat: el.lat, lon: el.lon } : el.center }
+        function atmName(tags) { return tags.name || tags.operator || tags.brand || 'ATM' }
+        function renderAtmCard(el, originLat, originLon) { const tags = el.tags || {}, c = elementCoords(el); if (!c || typeof c.lat !== 'number' || typeof c.lon !== 'number') return ''; const km = distanceKm(originLat, originLon, c.lat, c.lon), dist = km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(1)} km`; const title = escapeHtml(atmName(tags)); const detail = escapeHtml(tags['addr:street'] ? `${tags['addr:housenumber'] || ''} ${tags['addr:street']}${tags['addr:city'] ? ', ' + tags['addr:city'] : ''}`.trim() : (tags.description || tags.operator || tags.brand || 'Address not provided in map data')); const mapUrl = `https://www.google.com/maps/search/?api=1&query=${c.lat},${c.lon}`; const dirUrl = `https://www.google.com/maps/dir/?api=1&destination=${c.lat},${c.lon}&origin=${originLat},${originLon}`; return `<article class="atm-card"><div class="atm-top"><div class="icon">🏧</div><div><h2>${title}</h2><span style="display:inline-block;background:#eaf5ed;color:var(--green);padding:5px 9px;border-radius:20px;font-size:12px;font-weight:700">${dist} away</span></div></div><p>${detail}</p><div class="actions"><a class="btn" href="${mapUrl}" target="_blank" rel="noopener">Show on Map ↗</a><a class="btn secondary" href="${dirUrl}" target="_blank" rel="noopener">Get Directions ↗</a></div></article>` }
+        function renderMapsFallback(lat, lon) { const url = mapsSearchUrl(lat, lon); return `<article class="atm-card"><div class="atm-top"><div class="icon">🗺️</div><div><h2>More ATMs on Google Maps</h2><p style="margin:4px 0 0">If an ATM is missing from the cards above, search Google Maps for additional nearby listings.</p></div></div><div class="actions" style="margin-top:16px"><a class="btn" href="${url}" target="_blank" rel="noopener">Open Nearby ATMs ↗</a><a class="btn secondary" href="${directionsUrl(lat, lon)}" target="_blank" rel="noopener">Directions ↗</a></div></article>` }
+        async function fetchFromEndpoint(endpoint, query) {
+            const controller = new AbortController(), timer = setTimeout(() => controller.abort(), 30000);
+            try {
+                const url = endpoint + '?data=' + encodeURIComponent(query);
+                const res = await fetch(url, { signal: controller.signal, headers: { 'Accept': 'application/json' } }); if (!res.ok) throw new Error('HTTP ' + res.status); return await res.json()
+            } finally { clearTimeout(timer) }
+        }
+        async function getAtms(lat, lon) {
+            const query = `
+        [out:json][timeout:20];
+        (
+            node["amenity"="atm"](around:4000,${lat},${lon});
+            way["amenity"="atm"](around:4000,${lat},${lon});
+            relation["amenity"="atm"](around:4000,${lat},${lon});
+        );
+        out center;
+    `;
+
+            let lastError = null;
+
+            for (const endpoint of OVERPASS_ENDPOINTS) {
+                try {
+                    const data = await fetchFromEndpoint(endpoint, query);
+
+                    if (!data || !Array.isArray(data.elements)) {
+                        throw new Error("Invalid response from map server");
+                    }
+
+                    return data;
+                } catch (error) {
+                    lastError = error;
+                    console.warn("Overpass endpoint failed:", endpoint, error.message);
+                }
+            }
+
+            throw lastError || new Error("All Overpass servers failed");
+        }
+        button.addEventListener('click', () => { results.innerHTML = ''; if (!navigator.geolocation) { setStatus('Location is not supported by this browser. Use the Google Maps search instead.', true); return; } button.disabled = true; setStatus('Getting your location…'); navigator.geolocation.getCurrentPosition(async pos => { const lat = pos.coords.latitude, lon = pos.coords.longitude; manualLink.href = mapsSearchUrl(lat, lon); ensureMap(lat, lon); results.innerHTML = renderMapsFallback(lat, lon); setStatus('Location found. Loading nearby ATM cards…'); try { const data = await getAtms(lat, lon); const elements = (data.elements || []).filter(e => elementCoords(e)).sort((a, b) => { const ca = elementCoords(a), cb = elementCoords(b); return distanceKm(lat, lon, ca.lat, ca.lon) - distanceKm(lat, lon, cb.lat, cb.lon) }); const unique = []; const seen = new Set(); for (const e of elements) { const c = elementCoords(e), key = `${e.tags?.name || ''}|${c.lat.toFixed(5)}|${c.lon.toFixed(5)}`; if (!seen.has(key)) { seen.add(key); unique.push(e) } } const shown = unique.slice(0, 24); shown.forEach(e => addAtmMarker(e, lat, lon)); const cards = shown.map(e => renderAtmCard(e, lat, lon)).join(''); results.innerHTML = cards + renderMapsFallback(lat, lon); if (shown.length) { const bounds = L.latLngBounds([[lat, lon], ...shown.map(e => { const c = elementCoords(e); return [c.lat, c.lon] })]); map.fitBounds(bounds.pad(0.15), { maxZoom: 16 }); } if (unique.length) setStatus(`Found ${unique.length} nearby ATM entries. Results are sorted by distance.`); else setStatus('No ATM entries were returned for this area. Use the Google Maps card below.', true) } catch (err) { results.innerHTML = renderMapsFallback(lat, lon); setStatus('ATM data could not be loaded after trying the available map servers. Please try again in a moment, or use Google Maps below.', true) } finally { button.disabled = false } }, err => { let msg = 'Could not get your location. Use the Google Maps search instead.'; if (err.code === 1) msg = 'Location permission was denied. Allow location access in browser settings, or use manual Google Maps search.'; else if (err.code === 3) msg = 'Location request timed out. Try again or use Google Maps search.'; setStatus(msg, true); button.disabled = false }, { enableHighAccuracy: false, timeout: 20000, maximumAge: 120000 }); });
+    </script>
+</body>
+
+</html>

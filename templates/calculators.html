@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PaisaFlow | Calculators</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --green: #176b4b;
+            --dark: #103f30;
+            --cream: #f5f7f2;
+            --text: #183b2d;
+            --muted: #74847a;
+            --border: #e4ebe3;
+            --shadow: 0 12px 35px rgba(16, 63, 48, .06)
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            padding: 28px 5%;
+            min-height: 100vh;
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            background: var(--cream)
+        }
+
+        .wrap {
+            max-width: 1150px;
+            margin: auto
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            background: #fff;
+            padding: 17px 22px;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: var(--shadow)
+        }
+
+        .logo {
+            font-size: 27px;
+            font-weight: 800;
+            color: var(--green);
+            text-decoration: none
+        }
+
+        .logo span {
+            color: #72bd8f
+        }
+
+        .navlinks {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap
+        }
+
+        .navlinks a {
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            text-decoration: none;
+            color: var(--green);
+            font-weight: 600
+        }
+
+        header {
+            margin: 28px 0 22px
+        }
+
+        header h1 {
+            margin: 0 0 8px;
+            font-size: clamp(28px, 4vw, 38px)
+        }
+
+        header p {
+            color: var(--muted);
+            margin: 0
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 22px
+        }
+
+        .calc {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: var(--shadow)
+        }
+
+        .calc h2 {
+            margin: 0 0 7px
+        }
+
+        .desc {
+            color: var(--muted);
+            margin: 0 0 20px;
+            font-size: 14px
+        }
+
+        .fields {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 7px
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            font: inherit;
+            color: var(--text);
+            background: #fbfdfb
+        }
+
+        button {
+            margin-top: 16px;
+            width: 100%;
+            border: 0;
+            border-radius: 9px;
+            background: var(--green);
+            color: #fff;
+            padding: 13px;
+            font: inherit;
+            font-weight: 700;
+            cursor: pointer
+        }
+
+        .result {
+            margin-top: 18px;
+            padding: 17px;
+            background: #f0faf3;
+            border: 1px solid #d4efdd;
+            border-radius: 12px
+        }
+
+        .result span {
+            display: block;
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 5px
+        }
+
+        .result strong {
+            font-size: 25px;
+            color: var(--dark);
+            overflow-wrap: anywhere
+        }
+
+        .result-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px
+        }
+
+        .mini {
+            background: #f8faf8;
+            padding: 13px;
+            border-radius: 10px
+        }
+
+        .mini span {
+            font-size: 12px;
+            color: var(--muted);
+            display: block
+        }
+
+        .mini strong {
+            font-size: 17px
+        }
+
+        .note {
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.5;
+            margin: 14px 0 0
+        }
+
+        @media(max-width:760px) {
+            body {
+                padding: 16px 4%
+            }
+
+            .grid {
+                grid-template-columns: 1fr
+            }
+
+            .fields {
+                grid-template-columns: 1fr
+            }
+
+            .calc {
+                padding: 19px
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <nav class="nav"><a class="logo" href="{{ url_for('dashboard') }}">Paisa<span>Flow</span></a>
+            <div class="navlinks">
+                <a href="{{ url_for('dashboard') }}">← Dashboard</a><a href="{{ url_for('investment') }}">Investment
+                    Hub</a><a href="{{ url_for('logout') }}">Logout</a>
+            </div>
+        </nav>
+        <header>
+            <h1>Financial Calculators</h1>
+            <p>Estimate loan payments and savings growth with these simple calculators.</p>
+        </header>
+        <main class="grid">
+            <section class="calc">
+                <h2>🏠 EMI Calculator</h2>
+                <p class="desc">Estimate your monthly loan installment.</p>
+                <div class="fields">
+                    <div><label for="loanAmount">Loan Amount (₹)</label><input id="loanAmount" type="number" min="1"
+                            value="1000000"></div>
+                    <div><label for="loanRate">Annual Interest (%)</label><input id="loanRate" type="number" min="0"
+                            max="100" step="0.1" value="9"></div>
+                    <div><label for="loanYears">Loan Tenure (Years)</label><input id="loanYears" type="number" min="1"
+                            max="50" value="20"></div>
+                </div>
+                <button type="button" onclick="calculateEMI()">Calculate EMI</button>
+                <div class="result"><span>Monthly EMI</span><strong id="emiResult">₹0</strong>
+                    <div class="result-row">
+                        <div class="mini"><span>Total Interest</span><strong id="emiInterest">₹0</strong></div>
+                        <div class="mini"><span>Total Payment</span><strong id="emiTotal">₹0</strong></div>
+                    </div>
+                </div>
+            </section>
+            <section class="calc">
+                <h2>🏦 FD Calculator</h2>
+                <p class="desc">Estimate the maturity value of a fixed deposit.</p>
+                <div class="fields">
+                    <div><label for="fdAmount">Deposit Amount (₹)</label><input id="fdAmount" type="number" min="1"
+                            value="100000"></div>
+                    <div><label for="fdRate">Annual Interest (%)</label><input id="fdRate" type="number" min="0"
+                            max="100" step="0.1" value="7"></div>
+                    <div><label for="fdYears">Duration (Years)</label><input id="fdYears" type="number" min="1" max="50"
+                            step="0.25" value="5"></div>
+                </div>
+                <button type="button" onclick="calculateFD()">Calculate FD</button>
+                <div class="result"><span>Estimated Maturity Value</span><strong id="fdMaturity">₹0</strong>
+                    <div class="result-row">
+                        <div class="mini"><span>Principal</span><strong id="fdPrincipal">₹0</strong></div>
+                        <div class="mini"><span>Interest Earned</span><strong id="fdInterest">₹0</strong></div>
+                    </div>
+                </div>
+                <p class="note">Assumes quarterly compounding. Actual bank terms, taxes and penalties may vary.</p>
+            </section>
+            <section class="calc">
+                <h2>📅 RD Calculator</h2>
+                <p class="desc">Estimate maturity value from regular monthly deposits.</p>
+                <div class="fields">
+                    <div><label for="rdAmount">Monthly Deposit (₹)</label><input id="rdAmount" type="number" min="1"
+                            value="3000"></div>
+                    <div><label for="rdRate">Annual Interest (%)</label><input id="rdRate" type="number" min="0"
+                            max="100" step="0.1" value="6.5"></div>
+                    <div><label for="rdYears">Duration (Years)</label><input id="rdYears" type="number" min="1" max="10"
+                            step="0.25" value="5"></div>
+                </div>
+                <button type="button" onclick="calculateRD()">Calculate RD</button>
+                <div class="result"><span>Estimated Maturity Value</span><strong id="rdMaturity">₹0</strong>
+                    <div class="result-row">
+                        <div class="mini"><span>Total Deposits</span><strong id="rdPrincipal">₹0</strong></div>
+                        <div class="mini"><span>Interest Earned</span><strong id="rdInterest">₹0</strong></div>
+                    </div>
+                </div>
+                <p class="note">Approximation using quarterly-compounding-equivalent monthly growth. Actual RD maturity
+                    may differ by bank.</p>
+            </section>
+        </main>
+    </div>
+    <script>
+        const inr = value => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(value);
+        const val = id => Number(document.getElementById(id).value);
+        function calculateEMI() { const p = val('loanAmount'), annual = val('loanRate'), years = val('loanYears'); if (!(p > 0 && annual >= 0 && annual <= 100 && years > 0 && years <= 50)) return; const n = Math.round(years * 12), r = annual / 1200; const emi = r === 0 ? p / n : p * r * Math.pow(1 + r, n) / (Math.pow(1 + r, n) - 1); document.getElementById('emiResult').textContent = inr(emi); document.getElementById('emiInterest').textContent = inr(emi * n - p); document.getElementById('emiTotal').textContent = inr(emi * n); }
+        function calculateFD() { const p = val('fdAmount'), annual = val('fdRate'), years = val('fdYears'); if (!(p > 0 && annual >= 0 && annual <= 100 && years > 0 && years <= 50)) return; const maturity = p * Math.pow(1 + annual / 400, 4 * years); document.getElementById('fdMaturity').textContent = inr(maturity); document.getElementById('fdPrincipal').textContent = inr(p); document.getElementById('fdInterest').textContent = inr(maturity - p); }
+        function calculateRD() { const deposit = val('rdAmount'), annual = val('rdRate'), years = val('rdYears'); if (!(deposit > 0 && annual >= 0 && annual <= 100 && years > 0 && years <= 10)) return; const months = Math.round(years * 12), monthlyRate = Math.pow(1 + annual / 400, 1 / 3) - 1; let maturity = 0; for (let m = 0; m < months; m++)maturity += deposit * Math.pow(1 + monthlyRate, months - m); const principal = deposit * months; document.getElementById('rdMaturity').textContent = inr(maturity); document.getElementById('rdPrincipal').textContent = inr(principal); document.getElementById('rdInterest').textContent = inr(maturity - principal); }
+        ['loanAmount', 'loanRate', 'loanYears'].forEach(id => document.getElementById(id).addEventListener('input', calculateEMI));
+        ['fdAmount', 'fdRate', 'fdYears'].forEach(id => document.getElementById(id).addEventListener('input', calculateFD));
+        ['rdAmount', 'rdRate', 'rdYears'].forEach(id => document.getElementById(id).addEventListener('input', calculateRD)); calculateEMI(); calculateFD(); calculateRD();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>PaisaFlow | My Profile</title>
+     <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 35px 20px;
+            /* background: #f5f7f2; */
+            color: #173f30;
+            font-family: Arial, sans-serif;
+        }
+
+        .profile-container {
+            max-width: 950px;
+            margin: auto;
+        }
+
+        /* BACK BUTTON */
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 25px;
+            color: #176b4b;
+            font-weight: 600;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateX(-5px);
+        }
+
+        /* PROFILE HEADER */
+
+        .profile-header {
+            background: linear-gradient(120deg, #145c40, #21865c);
+            border-radius: 22px;
+            padding: 35px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 12px 30px rgba(23,107,75,0.13);
+        }
+
+        .avatar {
+            width: 100px;
+            height: 100px;
+            min-width: 100px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.18);
+            border: 3px solid rgba(255,255,255,0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 38px;
+            font-weight: bold;
+            color: white;
+            overflow: hidden;
+        }
+
+        .profile-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .profile-header h1 {
+            margin: 0 0 9px;
+            font-size: 27px;
+            color: white;
+        }
+
+        .profile-header p {
+            margin: 5px 0;
+            color: #e1f5e9;
+            font-size: 14px;
+        }
+
+        .member-badge {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 7px 13px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.17);
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* PROFILE CARD */
+
+        .profile-card {
+            background: white;
+            padding: 30px;
+            border: 1px solid #e6ece4;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(23,72,51,0.045);
+            margin-bottom: 22px;
+        }
+
+        .section-heading {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .section-icon {
+            width: 43px;
+            height: 43px;
+            border-radius: 12px;
+            background: #e9f5ed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 21px;
+        }
+
+        .section-heading h2 {
+            font-size: 19px;
+            color: #176b4b;
+            margin: 0 0 5px;
+        }
+
+        .section-heading p {
+            font-size: 12px;
+            color: #84928a;
+            margin: 0;
+        }
+
+        /* FORM */
+
+        .profile-form {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 22px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: bold;
+            color: #355b49;
+        }
+
+        .profile-form input,
+        .profile-form select {
+            width: 100%;
+            padding: 14px 15px;
+            border: 1px solid #dfe8df;
+            border-radius: 11px;
+            font-size: 14px;
+            color: #173f30;
+            background: #fbfcfa;
+            outline: none;
+            transition: 0.25s;
+        }
+
+        .profile-form input:focus,
+        .profile-form select:focus {
+            border-color: #21865c;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(33,134,92,0.10);
+        }
+
+        .profile-form input::placeholder {
+            color: #aab5ad;
+        }
+
+        /* PHOTO INPUT */
+
+        .profile-form input[type="file"] {
+            cursor: pointer;
+            padding: 11px;
+        }
+
+        .upload-info {
+            font-size: 12px;
+            color: #89958c;
+        }
+
+        /* SAVE BUTTON */
+
+        .form-actions {
+            grid-column: span 2;
+            margin-top: 5px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .save-btn {
+            padding: 14px 25px;
+            border: none;
+            border-radius: 11px;
+            background: linear-gradient(120deg, #176b4b, #269568);
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 18px rgba(23,107,75,0.2);
+        }
+
+        /* FLASH MESSAGE */
+
+        .message {
+            padding: 14px 17px;
+            margin-bottom: 22px;
+            border-radius: 11px;
+            background: #e8f7ed;
+            border: 1px solid #c8e9d1;
+            color: #176b4b;
+            font-size: 14px;
+        }
+
+        /* FOOTER */
+
+        .profile-footer {
+            text-align: center;
+            color: #89958c;
+            font-size: 12px;
+            margin-top: 25px;
+        }
+
+        /* RESPONSIVE */
+
+        @media(max-width: 600px) {
+
+            body {
+                padding: 22px 13px;
+            }
+
+            .profile-header {
+                padding: 25px 20px;
+                gap: 16px;
+            }
+
+            .avatar {
+                width: 75px;
+                height: 75px;
+                min-width: 75px;
+                font-size: 28px;
+            }
+
+            .profile-header h1 {
+                font-size: 20px;
+            }
+
+            .profile-card {
+                padding: 22px 17px;
+            }
+
+            .profile-form {
+                grid-template-columns: 1fr;
+                gap: 18px;
+            }
+
+            .form-group.full-width,
+            .form-actions {
+                grid-column: span 1;
+            }
+
+            .form-actions {
+                justify-content: stretch;
+            }
+
+            .save-btn {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="profile-container">
+
+    <!-- BACK NAVIGATION -->
+
+    <a class="back-link" href="{{ url_for('dashboard') }}">
+        ← Back to Dashboard
+    </a>
+
+
+    <!-- PROFILE HEADER -->
+
+    <div class="profile-header">
+
+        <div class="avatar">
+
+            {% if user['profile_photo'] %}
+
+                <img
+                    src="{{ url_for('static', filename='profile_photos/' + user['profile_photo']) }}"
+                    alt="Profile Picture"
+                    class="profile-image">
+
+            {% else %}
+
+                {{ user['name'][0]|upper if user['name'] else 'U' }}
+
+            {% endif %}
+
+        </div>
+
+        <div>
+
+            <h1>{{ user['name'] or 'User' }}</h1>
+
+            <p>{{ user['email'] }}</p>
+
+            <span class="member-badge">
+                ✓ PaisaFlow Member
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- PERSONAL INFORMATION -->
+
+    <div class="profile-card">
+
+        <div class="section-heading">
+
+            <div class="section-icon">
+                👤
+            </div>
+
+            <div>
+
+                <h2>Personal Information</h2>
+
+                <p>Manage your personal account details.</p>
+
+            </div>
+
+        </div>
+
+
+        <!-- FLASH MESSAGES -->
+
+        {% with messages = get_flashed_messages() %}
+
+            {% for message in messages %}
+
+                <div class="message">
+                    ✓ {{ message }}
+                </div>
+
+            {% endfor %}
+
+        {% endwith %}
+
+
+        <!-- PROFILE FORM -->
+
+        <form
+            class="profile-form"
+            method="POST"
+            enctype="multipart/form-data"
+            action="{{ url_for('profile') }}">
+
+
+            <!-- PROFILE PICTURE -->
+
+            <div class="form-group full-width">
+
+                <label for="profile_photo">
+                    Profile Picture
+                </label>
+
+                <input
+                    type="file"
+                    id="profile_photo"
+                    name="profile_photo"
+                    accept="image/png,image/jpeg,image/webp">
+
+                <span class="upload-info">
+                    JPG, PNG or WEBP | Maximum size 5 MB
+                </span>
+
+            </div>
+
+
+            <!-- FULL NAME -->
+
+            <div class="form-group full-width">
+
+                <label for="name">
+                    Full Name
+                </label>
+
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    placeholder="Enter your full name"
+                    value="{{ user['name'] or '' }}"
+                    required>
+
+            </div>
+
+
+            <!-- AGE -->
+
+            <div class="form-group">
+
+                <label for="age">
+                    Age
+                </label>
+
+                <input
+                    type="number"
+                    id="age"
+                    name="age"
+                    min="1"
+                    max="120"
+                    placeholder="Enter your age"
+                    value="{{ user['age'] if user['age'] is not none else '' }}">
+
+            </div>
+
+
+            <!-- GENDER -->
+
+            <div class="form-group">
+
+                <label for="gender">
+                    Gender
+                </label>
+
+                <select id="gender" name="gender">
+
+                    <option value="">
+                        Select Gender
+                    </option>
+
+                    <option value="Male"
+                        {% if user['gender'] == 'Male' %}selected{% endif %}>
+                        Male
+                    </option>
+
+                    <option value="Female"
+                        {% if user['gender'] == 'Female' %}selected{% endif %}>
+                        Female
+                    </option>
+
+                    <option value="Other"
+                        {% if user['gender'] == 'Other' %}selected{% endif %}>
+                        Other
+                    </option>
+
+                    <option value="Prefer not to say"
+                        {% if user['gender'] == 'Prefer not to say' %}selected{% endif %}>
+                        Prefer not to say
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- OCCUPATION -->
+
+            <div class="form-group">
+
+                <label for="occupation">
+                    Occupation
+                </label>
+
+                <input
+                    type="text"
+                    id="occupation"
+                    name="occupation"
+                    placeholder="e.g. Student, Developer"
+                    value="{{ user['occupation'] or '' }}">
+
+            </div>
+
+
+            <!-- EMAIL -->
+
+            <div class="form-group">
+
+                <label for="email">
+                    Email Address
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="Enter your email"
+                    value="{{ user['email'] }}"
+                    required>
+
+            </div>
+
+
+            <!-- PHONE -->
+
+            <div class="form-group full-width">
+
+                <label for="phone">
+                    Phone Number
+                </label>
+
+                <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    placeholder="Enter your phone number"
+                    value="{{ user['phone'] or '' }}">
+
+            </div>
+
+
+            <!-- SAVE BUTTON -->
+
+            <div class="form-actions">
+
+                <button type="submit" class="save-btn">
+                    ✓ Save Profile Changes
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <!-- FOOTER -->
+
+    <div class="profile-footer">
+
+        © PaisaFlow | Manage your money. Build your future.
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

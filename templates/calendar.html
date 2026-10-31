@@ -1,0 +1,717 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>PaisaFlow | Expense Calendar</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Flask data -->
+    <script id="expense-data" type="application/json">{{ expense_data | tojson }}</script>
+    <script id="today-data" type="application/json">{{ today | tojson }}</script>
+    <script id="income-data" type="application/json">{{ monthly_income | default(0) | tojson }}</script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            color: #1e293b;
+            padding: 25px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            color: #172554;
+        }
+
+        .header p {
+            color: #64748b;
+            margin-top: 7px;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            background: #2563eb;
+            color: white;
+            padding: 11px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .summary-card h3 {
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+
+        .summary-card h2 {
+            color: #172554;
+            font-size: 25px;
+        }
+
+        .income-value {
+            color: #16a34a !important;
+        }
+
+        .expense-value {
+            color: #dc2626 !important;
+        }
+
+        .calendar-section,
+        .chart-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
+            margin-bottom: 25px;
+        }
+
+        .section-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+
+        .section-heading h2,
+        .chart-section h2 {
+            color: #172554;
+            font-size: 21px;
+        }
+
+        .month-label {
+            background: #eff6ff;
+            color: #1d4ed8;
+            padding: 8px 13px;
+            border-radius: 7px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .weekdays,
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .weekdays {
+            margin-bottom: 10px;
+        }
+
+        .weekday {
+            text-align: center;
+            padding: 10px 2px;
+            font-weight: bold;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .calendar-day {
+            min-height: 105px;
+            padding: 12px 8px;
+            background: #467c5a;
+            border: 1px solid #ff0404;
+            border-radius: 9px;
+            text-decoration: none;
+            color: #afe800;
+            transition: 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .calendar-day:hover {
+            border-color: #2563eb;
+            background: #eff6ff;
+            transform: translateY(-2px);
+        }
+
+        .empty-day {
+            min-height: 105px;
+        }
+
+        .day-number {
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .day-expense {
+            font-size: 12px;
+            color: #dc2626;
+            font-weight: bold;
+            line-height: 1.4;
+        }
+
+        .no-expense {
+            font-size: 11px;
+            color: #94a3b8;
+        }
+
+        .today {
+            border: 2px solid #2563eb;
+            background: #eff6ff;
+        }
+
+        .today .day-number {
+            color: #2563eb;
+        }
+
+        .has-expense {
+            background: #fff7f7;
+        }
+
+        .chart-section p {
+            color: #64748b;
+            font-size: 14px;
+            margin: 8px 0 20px;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 320px;
+        }
+
+        .footer-note {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 13px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 14px;
+            }
+
+            .summary-cards {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .calendar-section,
+            .chart-section {
+                padding: 15px;
+            }
+
+            .calendar-grid,
+            .weekdays {
+                gap: 4px;
+            }
+
+            .calendar-day {
+                min-height: 75px;
+                padding: 8px 4px;
+            }
+
+            .empty-day {
+                min-height: 75px;
+            }
+
+            .day-number {
+                font-size: 13px;
+                margin-bottom: 8px;
+            }
+
+            .day-expense,
+            .no-expense {
+                font-size: 10px;
+            }
+
+            .weekday {
+                font-size: 11px;
+            }
+
+            .chart-container {
+                height: 260px;
+            }
+
+            .header h1 {
+                font-size: 23px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .calendar-day {
+                min-height: 65px;
+                padding: 6px 2px;
+            }
+
+            .empty-day {
+                min-height: 65px;
+            }
+
+            .day-expense {
+                font-size: 9px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="header">
+            <div>
+                <h1>📅 Expense Calendar</h1>
+                <p>Track your daily spending with PaisaFlow.</p>
+            </div>
+
+            <a href="{{ url_for('profile') }}" class="back-btn">
+                ← Back to Dashboard
+            </a>
+        </div>
+
+        <div class="summary-cards">
+
+            <div class="summary-card">
+                <h3>💰 Monthly Income</h3>
+                <h2 class="income-value" id="monthlyIncome">₹0.00</h2>
+            </div>
+
+            <div class="summary-card">
+                <h3>💸 Total Monthly Expenses</h3>
+                <h2 class="expense-value" id="monthlyExpenses">₹0.00</h2>
+            </div>
+
+            <div class="summary-card">
+                <h3>💵 Remaining Balance</h3>
+                <h2 id="remainingBalance">₹0.00</h2>
+            </div>
+
+        </div>
+
+        <div class="calendar-section">
+
+            <div class="section-heading">
+                <h2>Monthly Overview</h2>
+                <span class="month-label" id="monthLabel">Loading...</span>
+            </div>
+
+            <div class="weekdays">
+                <div class="weekday">Sun</div>
+                <div class="weekday">Mon</div>
+                <div class="weekday">Tue</div>
+                <div class="weekday">Wed</div>
+                <div class="weekday">Thu</div>
+                <div class="weekday">Fri</div>
+                <div class="weekday">Sat</div>
+            </div>
+
+            <div class="calendar-grid" id="calendarGrid"></div>
+
+        </div>
+
+        <div class="chart-section">
+            <h2>📊 Daily Spending Trend</h2>
+            <p>See how your expenses change throughout the month.</p>
+
+            <div class="chart-container">
+                <canvas id="monthlyChart"></canvas>
+            </div>
+        </div>
+
+        <div class="footer-note">
+            PaisaFlow — Make every rupee count.
+        </div>
+
+    </div>
+
+    <script>
+        // ==========================================
+        // 1. READ DATA SENT BY FLASK
+        // ==========================================
+
+        const rawExpenseData = JSON.parse(
+            document.getElementById("expense-data").textContent
+        );
+
+        const serverToday = JSON.parse(
+            document.getElementById("today-data").textContent
+        );
+
+        const monthlyIncome = Number(
+            JSON.parse(
+                document.getElementById("income-data").textContent
+            )
+        ) || 0;
+
+
+        // ==========================================
+        // 2. GROUP EXPENSES BY DATE
+        // ==========================================
+
+        const expenseData = {};
+
+        rawExpenseData.forEach(function (expense) {
+
+            const expenseDate = String(
+                expense.date || ""
+            ).trim().slice(0, 10);
+
+            const amount = Number(expense.amount) || 0;
+
+            // Check whether the date is in YYYY-MM-DD format.
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(expenseDate)) {
+                console.warn("Invalid expense date:", expense);
+                return;
+            }
+
+            // Add expenses that belong to the same date.
+            expenseData[expenseDate] =
+                (expenseData[expenseDate] || 0) + amount;
+        });
+
+
+        // Debugging information.
+        console.log("All Expenses Received:", rawExpenseData);
+        console.log("Daily Expense Totals:", expenseData);
+        console.log("Today's Date:", serverToday);
+
+
+        // ==========================================
+        // 3. DETERMINE THE CURRENT MONTH
+        // ==========================================
+
+        const currentDate = serverToday
+            ? new Date(serverToday + "T12:00:00")
+            : new Date();
+
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+        const todayDate = currentDate.getDate();
+
+        const monthPrefix =
+            year + "-" + String(month + 1).padStart(2, "0") + "-";
+
+        document.getElementById("monthLabel").textContent =
+            currentDate.toLocaleDateString("en-IN", {
+                month: "long",
+                year: "numeric"
+            });
+
+
+        // ==========================================
+        // 4. FORMAT CURRENCY
+        // ==========================================
+
+        function formatRupees(amount) {
+            return "₹" + Number(amount || 0).toLocaleString("en-IN", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+
+        // ==========================================
+        // 5. CALCULATE MONTHLY EXPENSES
+        // ==========================================
+
+        let monthlyTotal = 0;
+
+        Object.keys(expenseData).forEach(function (dateKey) {
+
+            if (dateKey.startsWith(monthPrefix)) {
+                monthlyTotal += expenseData[dateKey];
+            }
+        });
+
+        console.log("Current Month Total:", monthlyTotal);
+
+
+        // ==========================================
+        // 6. UPDATE SUMMARY CARDS
+        // ==========================================
+
+        document.getElementById("monthlyIncome").textContent =
+            formatRupees(monthlyIncome);
+
+        document.getElementById("monthlyExpenses").textContent =
+            formatRupees(monthlyTotal);
+
+        document.getElementById("remainingBalance").textContent =
+            formatRupees(monthlyIncome - monthlyTotal);
+
+
+        // ==========================================
+        // 7. GET EXPENSE FOR A PARTICULAR DAY
+        // ==========================================
+
+        function getExpenseForDate(day) {
+
+            const dateKey =
+                year + "-" +
+                String(month + 1).padStart(2, "0") + "-" +
+                String(day).padStart(2, "0");
+
+            return expenseData[dateKey] || 0;
+        }
+
+
+        // ==========================================
+        // 8. BUILD THE CALENDAR
+        // ==========================================
+
+        const calendarGrid = document.getElementById("calendarGrid");
+
+        const firstDay = new Date(year, month, 1).getDay();
+
+        const daysInMonth = new Date(
+            year,
+            month + 1,
+            0
+        ).getDate();
+
+
+        // Empty cells before the first day of the month.
+        for (let i = 0; i < firstDay; i++) {
+
+            const emptyDay = document.createElement("div");
+
+            emptyDay.className = "empty-day";
+
+            calendarGrid.appendChild(emptyDay);
+        }
+
+
+        // Data for the monthly chart.
+        const trendLabels = [];
+        const trendValues = [];
+
+
+        // Create each calendar day.
+        for (let day = 1; day <= daysInMonth; day++) {
+
+            const dateKey =
+                year + "-" +
+                String(month + 1).padStart(2, "0") + "-" +
+                String(day).padStart(2, "0");
+
+            const expense = getExpenseForDate(day);
+
+            trendLabels.push(day);
+            trendValues.push(expense);
+
+
+            // Create the clickable calendar cell.
+            const dayLink = document.createElement("a");
+
+            dayLink.className = "calendar-day";
+
+            dayLink.href =
+                "/calendar/day/" + dateKey;
+
+
+            // Highlight today's date.
+            if (day === todayDate) {
+                dayLink.classList.add("today");
+            }
+
+
+            // Highlight days with expenses.
+            if (expense > 0) {
+                dayLink.classList.add("has-expense");
+            }
+
+
+            // Display the date number.
+            const dayNumber = document.createElement("div");
+
+            dayNumber.className = "day-number";
+
+            dayNumber.textContent = day;
+
+            dayLink.appendChild(dayNumber);
+
+
+            // Display the total expense for this date.
+            if (expense > 0) {
+
+                const expenseLabel = document.createElement("div");
+
+                expenseLabel.className = "day-expense";
+
+                expenseLabel.textContent =
+                    formatRupees(expense);
+
+                dayLink.appendChild(expenseLabel);
+
+            } else {
+
+                const noExpense = document.createElement("div");
+
+                noExpense.className = "no-expense";
+
+                noExpense.textContent = "No expenses";
+
+                dayLink.appendChild(noExpense);
+            }
+
+
+            calendarGrid.appendChild(dayLink);
+        }
+
+
+        // ==========================================
+        // 9. CREATE THE MONTHLY EXPENSE CHART
+        // ==========================================
+
+        const chartCanvas = document.getElementById("monthlyChart");
+
+        new Chart(chartCanvas, {
+
+            type: "line",
+
+            data: {
+                labels: trendLabels,
+
+                datasets: [{
+                    label: "Daily Expenses (₹)",
+
+                    data: trendValues,
+
+                    borderColor: "#2563eb",
+
+                    backgroundColor: "rgba(37, 99, 235, 0.10)",
+
+                    borderWidth: 3,
+
+                    fill: true,
+
+                    tension: 0.3,
+
+                    pointRadius: 4,
+
+                    pointHoverRadius: 6,
+
+                    pointBackgroundColor: "#2563eb"
+                }]
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                interaction: {
+                    intersect: false,
+                    mode: "index"
+                },
+
+                plugins: {
+
+                    legend: {
+                        display: true,
+                        position: "top"
+                    },
+
+                    tooltip: {
+
+                        callbacks: {
+
+                            label: function (context) {
+
+                                return "Expenses: " +
+                                    formatRupees(
+                                        Number(context.raw) || 0
+                                    );
+                            }
+                        }
+                    }
+                },
+
+                scales: {
+
+                    x: {
+
+                        title: {
+                            display: true,
+                            text: "Day of Month"
+                        },
+
+                        grid: {
+                            display: false
+                        }
+                    },
+
+                    y: {
+
+                        beginAtZero: true,
+
+                        title: {
+                            display: true,
+                            text: "Expenses (₹)"
+                        }
+                    }
+                }
+            }
+        });
+
+
+        // ==========================================
+        // 10. VERIFY THE EXPENSE FOR 31 OCTOBER
+        // ==========================================
+
+        console.log(
+            "31 October Expense:",
+            expenseData["2026-10-31"] || 0
+        );
+
+    </script>
+
+</body>
+
+</html>
+```
