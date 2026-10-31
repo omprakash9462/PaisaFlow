@@ -49,8 +49,7 @@ client = (
 
 app = Flask(__name__)
 
-app.secret_key = "paisaflow_change_this_secret_key"
-
+app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-key")
 DATABASE = "paisaflow.db"
 
 # Profile Image Configuration
